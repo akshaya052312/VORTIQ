@@ -1,0 +1,32 @@
+# Environment
+.env
+.venv/
+venv/
+env/
+akshu05/
+
+# Python
+__pycache__/
+pycache/
+*.pyc
+*.py[cod]
+*.egg-info/
+dist/
+build/
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+
+# Logs and Schedules
+*.log
+celerybeat-schedule
+
+# OS and IDEs
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+Thumbs.db

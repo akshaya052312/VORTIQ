@@ -1,0 +1,584 @@
+/* Upload Page Styling - Vortiq */
+
+.upload-content-layout {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 2rem;
+}
+
+.upload-card {
+  width: 100%;
+  max-width: 580px;
+  background: rgba(20, 20, 30, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  padding: 2.5rem;
+}
+
+.upload-header {
+  margin-bottom: 1.5rem;
+}
+
+.upload-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.5rem;
+}
+
+.upload-subtitle {
+  font-size: 0.95rem;
+  color: #71717a;
+  line-height: 1.5;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Nav Link Button in Navbar */
+.nav-link-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #a1a1aa;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.nav-link-btn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Tab Selector Styling */
+.upload-tabs {
+  display: flex;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 0.75rem 1rem;
+  color: #71717a;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.25s ease;
+}
+
+.tab-btn:hover:not(:disabled) {
+  color: #e4e4e7;
+}
+
+.tab-btn-active {
+  color: #a78bfa;
+  border-bottom-color: #8b5cf6;
+}
+
+.tab-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Hidden File Input */
+.hidden-file-input {
+  display: none;
+}
+
+/* Dropzone style */
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 2rem;
+  border: 2px dashed rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.01);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  text-align: center;
+}
+
+.dropzone:hover {
+  border-color: #8b5cf6;
+  background: rgba(139, 92, 246, 0.03);
+}
+
+.dropzone-active {
+  border-color: #a78bfa;
+  background: rgba(139, 92, 246, 0.08);
+  transform: scale(1.01);
+}
+
+.dropzone-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.dropzone-icon {
+  width: 3rem;
+  height: 3rem;
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.dropzone:hover .dropzone-icon {
+  color: #c084fc;
+}
+
+.dropzone-text {
+  font-size: 0.95rem;
+  color: #e4e4e7;
+  font-weight: 500;
+}
+
+.browse-link {
+  color: #a78bfa;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.dropzone-subtext {
+  font-size: 0.8rem;
+  color: #71717a;
+}
+
+.dropzone-error {
+  border-color: rgba(239, 68, 68, 0.5);
+  background: rgba(239, 68, 68, 0.02);
+}
+
+/* File selected state */
+.dropzone-has-file {
+  border-style: solid;
+  border-color: rgba(139, 92, 246, 0.3);
+  background: rgba(139, 92, 246, 0.05);
+  cursor: default;
+}
+
+.dropzone-file-state {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  text-align: left;
+}
+
+.file-icon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 8px;
+  background: rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.file-details {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.file-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 0.15rem;
+}
+
+.file-size {
+  font-size: 0.8rem;
+  color: #a1a1aa;
+}
+
+.remove-file-btn {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.remove-file-btn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.remove-file-btn svg {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+/* Microphone Recorder Panel */
+.recorder-panel {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 2.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 220px;
+}
+
+/* Live state: recording */
+.recorder-active-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pulse-container {
+  position: relative;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recording-wave-dot {
+  width: 1rem;
+  height: 1rem;
+  background-color: #ef4444;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+.recording-wave-pulse {
+  position: absolute;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: rgba(239, 68, 68, 0.3);
+  border-radius: 50%;
+  animation: rec-pulse 1.2s infinite ease-out;
+  z-index: 1;
+}
+
+.recorder-timer {
+  font-family: monospace;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.05em;
+}
+
+.recorder-hint {
+  font-size: 0.875rem;
+  color: #a1a1aa;
+  margin-bottom: 0.5rem;
+}
+
+.stop-record-btn {
+  padding: 0.65rem 1.5rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: #f87171;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.stop-record-btn:hover {
+  background: #ef4444;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+/* Idle / preview states */
+.recorder-start-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.mic-icon-container {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+}
+
+.recorder-start-view:hover .mic-icon-container {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+  transform: scale(1.05);
+}
+
+.mic-icon-container svg {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.start-record-btn {
+  padding: 0.65rem 1.5rem;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.start-record-btn:hover {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  color: #ffffff;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.3);
+}
+
+.mic-helper-text {
+  font-size: 0.75rem;
+  color: #71717a;
+}
+
+/* Audio preview */
+.recorder-preview-view {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.preview-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #a1a1aa;
+}
+
+.preview-label {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.audio-preview-player {
+  width: 100%;
+  border-radius: 8px;
+  outline: none;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.recorder-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.re-record-btn {
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  color: #a1a1aa;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.re-record-btn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffffff;
+}
+
+/* Actions buttons */
+.upload-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.cancel-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e4e4e7;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.submit-btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.submit-btn:hover:not(:disabled) {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.35);
+}
+
+.submit-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Polling view card modifications */
+.polling-view-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4rem 2rem;
+}
+
+.polling-title {
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.polling-subtitle {
+  font-size: 0.95rem;
+  color: #71717a;
+  margin-top: 0.25rem;
+}
+
+.polling-status-box {
+  margin: 2rem 0;
+}
+
+.large-badge {
+  padding: 0.45rem 1.25rem;
+  font-size: 0.95rem;
+}
+
+.polling-advice {
+  font-size: 0.875rem;
+  color: #71717a;
+  line-height: 1.6;
+  max-width: 360px;
+}
+
+.polling-failure-area {
+  max-width: 360px;
+}
+
+.error-text {
+  font-size: 0.9rem;
+  color: #f87171;
+  line-height: 1.5;
+}
+
+.mt-3 { margin-top: 0.75rem; }
+.mt-4 { margin-top: 1rem; }
+.m-auto { margin-left: auto; margin-right: auto; }
+.text-center { text-align: center; }
+
+/* Custom red state colors for failure in polling orbs */
+.bg-red-glow {
+  background: #ef4444 !important;
+  opacity: 0.4 !important;
+}
+
+.bg-red {
+  background: linear-gradient(135deg, #f87171 0%, #dc2626 100%) !important;
+}
+
+/* Keyframes */
+@keyframes rec-pulse {
+  to {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .upload-content-layout {
+    padding: 1.5rem 1rem;
+  }
+  .upload-card {
+    padding: 1.5rem;
+  }
+  .upload-tabs {
+    gap: 0.5rem;
+  }
+  .tab-btn {
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+  .upload-actions {
+    flex-direction: column-reverse;
+    width: 100%;
+  }
+  .cancel-btn, .submit-btn {
+    width: 100%;
+  }
+}

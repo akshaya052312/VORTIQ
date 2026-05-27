@@ -1,0 +1,728 @@
+/* ===================================================
+   MeetingNotes.css — Vortiq Meeting Notes Page
+   =================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* ── Page Layout ─────────────────────────────────── */
+.mn-page-body {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 64px);
+  overflow: hidden;
+}
+
+/* ── Sidebar ─────────────────────────────────────── */
+.mn-sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: rgba(10, 10, 16, 0.95);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 1.5rem 1rem;
+  gap: 0;
+}
+
+.mn-sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+.mn-sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.mn-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.mn-sidebar-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mn-sidebar-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #71717a;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: color 0.2s;
+  text-decoration: none;
+}
+.mn-sidebar-back svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+.mn-sidebar-back:hover {
+  color: #a78bfa;
+}
+
+.mn-sidebar-section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #52525b;
+  margin: 0;
+  padding-top: 0.25rem;
+}
+
+.mn-sidebar-meeting-card {
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.18);
+  border-radius: 10px;
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.mn-sidebar-meeting-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #e4e4e7;
+  margin: 0;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.mn-sidebar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mn-sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 7px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #a1a1aa;
+  text-decoration: none;
+  transition: all 0.15s ease;
+  border: 1px solid transparent;
+}
+.mn-sidebar-link svg {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex-shrink: 0;
+}
+.mn-sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #e4e4e7;
+}
+.mn-sidebar-link-active {
+  background: rgba(139, 92, 246, 0.15);
+  color: #c4b5fd;
+  border-color: rgba(139, 92, 246, 0.25);
+}
+.mn-sidebar-link-active:hover {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c4b5fd;
+}
+
+/* ── Vertical Tab Navigation ─────────────────────── */
+.mn-tabs-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.mn-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #71717a;
+  text-align: left;
+  width: 100%;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.mn-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
+  color: #e4e4e7;
+}
+
+.mn-tab-btn-active {
+  background: rgba(139, 92, 246, 0.12);
+  color: #c4b5fd;
+}
+
+.mn-tab-btn-active:hover {
+  background: rgba(139, 92, 246, 0.18);
+  color: #c4b5fd;
+}
+
+.mn-tab-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mn-tab-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.mn-tab-label {
+  flex: 1;
+}
+
+.mn-tab-indicator {
+  position: absolute;
+  left: 0;
+  top: 20%;
+  height: 60%;
+  width: 3px;
+  background: linear-gradient(180deg, #a78bfa 0%, #7c3aed 100%);
+  border-radius: 0 2px 2px 0;
+}
+
+/* ── Main Content Area ───────────────────────────── */
+.mn-main {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.mn-main::-webkit-scrollbar {
+  width: 6px;
+}
+.mn-main::-webkit-scrollbar-track {
+  background: transparent;
+}
+.mn-main::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+}
+
+/* ── Meeting Header ──────────────────────────────── */
+.mn-meeting-header {
+  padding: 2rem 2.5rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(13, 13, 20, 0.6);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.mn-meeting-title-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.4rem;
+}
+
+.mn-meeting-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.025em;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.mn-meeting-date {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #71717a;
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.mn-meeting-date svg {
+  width: 0.85rem;
+  height: 0.85rem;
+}
+
+/* Status badge for meeting notes page */
+.mn-status-badge {
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.mn-status-completed {
+  background: rgba(34, 197, 94, 0.12);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+.mn-status-processing,
+.mn-status-pending {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+.mn-status-failed {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* ── Tab Content ─────────────────────────────────── */
+.mn-content-area {
+  flex: 1;
+  padding: 2rem 2.5rem;
+}
+
+.mn-tab-content {
+  animation: mn-fade-in 0.25s ease;
+}
+
+@keyframes mn-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.mn-tab-content-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.mn-content-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.mn-content-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.mn-content-subtitle {
+  font-size: 0.82rem;
+  color: #52525b;
+  margin: 0;
+}
+
+/* ── Summary ─────────────────────────────────────── */
+.mn-summary-card {
+  background: rgba(20, 20, 32, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 1.75rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.mn-summary-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #7c3aed 0%, #a78bfa 50%, transparent 100%);
+}
+
+.mn-summary-text {
+  font-size: 0.975rem;
+  line-height: 1.8;
+  color: #d4d4d8;
+  margin: 0;
+}
+
+/* ── Action Items Table ──────────────────────────── */
+.mn-table-wrap {
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.mn-action-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.mn-action-table thead tr {
+  background: rgba(139, 92, 246, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.mn-action-table thead th {
+  padding: 0.875rem 1.25rem;
+  text-align: left;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #71717a;
+}
+
+.mn-action-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.15s ease;
+}
+
+.mn-action-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.mn-action-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.mn-action-table tbody td {
+  padding: 1rem 1.25rem;
+  color: #d4d4d8;
+  vertical-align: middle;
+}
+
+.mn-row-num {
+  color: #52525b;
+  font-size: 0.78rem;
+  width: 2rem;
+}
+
+.mn-assignee-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.mn-assignee-avatar {
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mn-task-cell {
+  color: #e4e4e7;
+  line-height: 1.5;
+}
+
+.mn-deadline-chip {
+  display: inline-flex;
+  padding: 0.2rem 0.6rem;
+  background: rgba(139, 92, 246, 0.12);
+  color: #c4b5fd;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.mn-no-deadline {
+  color: #52525b;
+  font-size: 0.8rem;
+  font-style: italic;
+}
+
+/* ── Speaker Breakdown ───────────────────────────── */
+.mn-speaker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.mn-speaker-turn {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  animation: mn-fade-in 0.2s ease both;
+}
+
+.mn-speaker-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #8b5cf6 0%, #4c1d95 100%);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.2);
+}
+
+.mn-speaker-bubble {
+  flex: 1;
+  background: rgba(20, 20, 32, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px 12px 12px 12px;
+  padding: 0.875rem 1.125rem;
+}
+
+.mn-speaker-name {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #c4b5fd;
+  letter-spacing: 0.03em;
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.mn-speaker-text {
+  font-size: 0.875rem;
+  line-height: 1.65;
+  color: #d4d4d8;
+  margin: 0;
+}
+
+/* ── Decisions & Questions Lists ─────────────────── */
+.mn-decisions-list,
+.mn-questions-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.mn-decision-item,
+.mn-question-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: rgba(20, 20, 32, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+  transition: border-color 0.2s ease;
+}
+
+.mn-decision-item:hover,
+.mn-question-item:hover {
+  border-color: rgba(139, 92, 246, 0.2);
+}
+
+.mn-decision-num,
+.mn-question-num {
+  min-width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.mn-decision-num {
+  background: rgba(34, 197, 94, 0.1);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.mn-question-num {
+  background: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.mn-decision-item p,
+.mn-question-item p {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: #d4d4d8;
+  margin: 0;
+  padding-top: 0.1rem;
+}
+
+/* ── Empty State ─────────────────────────────────── */
+.mn-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  gap: 1rem;
+  text-align: center;
+  color: #52525b;
+}
+
+.mn-empty-state svg {
+  width: 2.5rem;
+  height: 2.5rem;
+  opacity: 0.5;
+}
+
+.mn-empty-state p {
+  font-size: 0.9rem;
+  color: #52525b;
+  margin: 0;
+}
+
+/* ── Branded Loading Screen ──────────────────────── */
+.mn-loading-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.75rem;
+  padding: 4rem 2rem;
+  background: radial-gradient(ellipse at 50% 30%, rgba(109, 40, 217, 0.08) 0%, transparent 70%);
+}
+
+.mn-loading-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.mn-brand-orb-wrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+}
+
+.mn-brand-orb-glow {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.35) 0%, transparent 70%);
+  animation: mn-pulse-glow 2s ease-in-out infinite;
+}
+
+.mn-brand-orb {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed 0%, #4c1d95 100%);
+  box-shadow:
+    0 0 30px rgba(124, 58, 237, 0.5),
+    0 0 60px rgba(124, 58, 237, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: mn-rotate-orb 8s linear infinite;
+}
+
+@keyframes mn-pulse-glow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%       { opacity: 1;   transform: scale(1.15); }
+}
+
+@keyframes mn-rotate-orb {
+  from { filter: hue-rotate(0deg); }
+  to   { filter: hue-rotate(360deg); }
+}
+
+.mn-brand-name {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.mn-loading-message {
+  font-size: 0.9rem;
+  color: #71717a;
+  max-width: 340px;
+  text-align: center;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.mn-loading-dots {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mn-loading-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #7c3aed;
+  animation: mn-dot-bounce 1.2s ease-in-out infinite;
+}
+
+.mn-loading-dots span:nth-child(1) { animation-delay: 0s; }
+.mn-loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.mn-loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes mn-dot-bounce {
+  0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+  40%            { transform: scale(1.2); opacity: 1; }
+}
+
+/* ── Navbar Center Links ──────────────────────────── */
+.navbar-center-links {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.active-nav-link {
+  background: rgba(139, 92, 246, 0.12) !important;
+  border-color: rgba(139, 92, 246, 0.25) !important;
+  color: #c4b5fd !important;
+}
+
+/* ── Horizontal Tab Nav (used when sidebar is shared) ─ */
+.mn-tabs-horizontal {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.75rem 2.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  background: rgba(13, 13, 20, 0.4);
+}
+
+.mn-tabs-horizontal .mn-tab-btn {
+  width: auto;
+  padding: 0.5rem 0.875rem;
+  font-size: 0.82rem;
+}
+
+.mn-tabs-horizontal .mn-tab-indicator {
+  left: auto;
+  top: auto;
+  bottom: -1px;
+  right: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px 2px 0 0;
+  background: linear-gradient(90deg, #a78bfa 0%, #7c3aed 100%);
+}
+
+/* Fix content area when rendered inside MeetingLayout (no mn-main wrapper height) */
+.mn-content-area {
+  flex: unset;
+  padding: 2rem 2.5rem;
+}
+
