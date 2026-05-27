@@ -397,9 +397,6 @@ const Upload = () => {
           <Link to="/" className="nav-link-btn">
             Back to Dashboard
           </Link>
-          <Link to="/integrations" className="nav-link-btn">
-            Integrations
-          </Link>
           <button onClick={handleLogout} className="logout-btn">
             Log Out
           </button>

@@ -202,7 +202,6 @@ const MeetingLayout = ({ meetingId, meetingTitle, activePage, children }) => {
         <Link to="/" style={styles.navBrand}>Vortiq</Link>
         <div style={styles.navActions}>
           <Link to="/" style={styles.navLinkBtn}>Dashboard</Link>
-          <Link to="/integrations" style={styles.navLinkBtn}>Integrations</Link>
           <button onClick={handleLogout} style={styles.logoutBtn}>Log Out</button>
         </div>
       </header>

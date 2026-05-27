@@ -13,7 +13,6 @@ import Dashboard from "./pages/Dashboard";
 import Upload from "./pages/Upload";
 import MeetingDetail from "./pages/MeetingDetail";
 import MeetingNotes from "./pages/MeetingNotes";
-import Integrations from "./pages/Integrations";
 
 function App() {
   return (
@@ -54,14 +53,6 @@ function App() {
             element={
               <ProtectedRoute>
                 <MeetingNotes />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/integrations"
-            element={
-              <ProtectedRoute>
-                <Integrations />
               </ProtectedRoute>
             }
           />

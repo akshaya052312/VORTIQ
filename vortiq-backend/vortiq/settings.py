@@ -56,7 +56,6 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "meetings.apps.MeetingsConfig",
     "transcriptions.apps.TranscriptionsConfig",
-    "integrations.apps.IntegrationsConfig",
 ]
 
 # ──────────────────────────────────────────────

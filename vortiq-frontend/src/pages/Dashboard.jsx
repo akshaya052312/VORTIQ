@@ -147,7 +147,6 @@ const Dashboard = () => {
         </div>
         <div className="navbar-actions">
           <Link to="/" className="nav-link-btn">Dashboard</Link>
-          <Link to="/integrations" className="nav-link-btn">Integrations</Link>
           <div className="user-profile">
             <div className="user-avatar">
               {user?.full_name ? user.full_name.charAt(0).toUpperCase() : "U"}

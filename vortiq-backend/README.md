@@ -2,6 +2,13 @@
 
 An AI-powered meeting intelligence platform built with Django.
 
+## Features
+- AI meeting transcription with Whisper
+- AI-generated summaries and action items via Groq
+- Speaker identification
+- Real-time collaborative notes
+- Multi-user presence indicators
+
 ## Tech Stack
 - **Languages & Frameworks**: Python, Django, Django REST Framework
 - **Database & Services**: PostgreSQL, Celery, Redis
@@ -52,6 +59,31 @@ An AI-powered meeting intelligence platform built with Django.
    python manage.py runserver
    ```
 
+## Frontend Setup
+
+1. **Clone the vortiq-frontend repository**:
+   ```bash
+   git clone <frontend-repository-url>
+   cd vortiq-frontend
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Configure environment variables**:
+   Copy `.env.example` to `.env` and set the following values:
+   ```env
+   VITE_API_BASE_URL=http://localhost:8000
+   VITE_WS_BASE_URL=ws://localhost:8000
+   ```
+
+4. **Start the development server**:
+   ```bash
+   npm run dev
+   ```
+
 ## Running Celery
 To process audio transcription and structured notes generation in the background, run the Celery worker:
 ```bash
@@ -73,23 +105,5 @@ The following environment variables are supported by Vortiq. Please define them 
   - Comma-separated list of hostnames allowed to connect to this server.
 - **`GROQ_API_KEY`**: `GROQ_API_KEY=your-groq-api-key-here`
   - API key used to access Groq cloud inference engine models.
-- **`GEMINI_API_KEY`**: `GEMINI_API_KEY=your-gemini-api-key-here`
-  - API key used to access Google Gemini LLM API.
-- **`SLACK_CLIENT_ID`**: `SLACK_CLIENT_ID=your-slack-client-id`
-  - Client ID of your registered Slack App for Slack OAuth connection flow.
-- **`SLACK_CLIENT_SECRET`**: `SLACK_CLIENT_SECRET=your-slack-client-secret`
-  - Client secret of your registered Slack App for Slack OAuth connection flow.
-- **`SLACK_REDIRECT_URI`**: `SLACK_REDIRECT_URI=http://localhost:8000/api/integrations/slack/callback/`
-  - Redirect callback URI registered in Slack Developer Console.
-- **`NOTION_CLIENT_ID`**: `NOTION_CLIENT_ID=your-notion-client-id`
-  - OAuth client ID of your Notion integration.
-- **`NOTION_CLIENT_SECRET`**: `NOTION_CLIENT_SECRET=your-notion-client-secret`
-  - OAuth client secret of your Notion integration.
-- **`NOTION_REDIRECT_URI`**: `NOTION_REDIRECT_URI=http://localhost:8000/api/integrations/notion/callback/`
-  - Redirect callback URI registered in Notion Developer Integrations console.
-- **`GOOGLE_CLIENT_ID`**: `GOOGLE_CLIENT_ID=your-google-client-id`
-  - Google OAuth 2.0 Web application Client ID.
-- **`GOOGLE_CLIENT_SECRET`**: `GOOGLE_CLIENT_SECRET=your-google-client-secret`
-  - Google OAuth 2.0 Web application Client secret.
-- **`GOOGLE_REDIRECT_URI`**: `GOOGLE_REDIRECT_URI=http://localhost:8000/api/integrations/google/callback/`
-  - Redirect callback URI registered in Google Cloud Console.
+
+Integrations (Slack, Notion, Google Calendar) — coming soon

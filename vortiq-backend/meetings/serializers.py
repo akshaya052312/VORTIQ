@@ -71,7 +71,6 @@ class MeetingDetailSerializer(serializers.ModelSerializer):
 
     transcription = serializers.SerializerMethodField()
     structured_notes = serializers.SerializerMethodField()
-    integration_logs = serializers.SerializerMethodField()
 
     class Meta:
         model = Meeting
@@ -83,7 +82,6 @@ class MeetingDetailSerializer(serializers.ModelSerializer):
             "updated_at",
             "transcription",
             "structured_notes",
-            "integration_logs",
         )
         read_only_fields = fields
 
@@ -106,9 +104,3 @@ class MeetingDetailSerializer(serializers.ModelSerializer):
             return StructuredNotesSerializer(obj.structured_notes).data
         except Meeting.structured_notes.RelatedObjectDoesNotExist:
             return None
-
-    def get_integration_logs(self, obj):
-        """Include list of integration logs for this meeting."""
-        from integrations.serializers import IntegrationLogSerializer
-        logs = obj.integration_logs.all().order_by('-ran_at')
-        return IntegrationLogSerializer(logs, many=True).data

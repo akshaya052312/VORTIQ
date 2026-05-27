@@ -206,11 +206,6 @@ def generate_structured_notes(self, meeting_id):
                 meeting.status = Meeting.Status.COMPLETED
                 meeting.save(update_fields=["status", "updated_at"])
 
-            try:
-                from integrations.integration_runner import trigger_integrations
-                trigger_integrations(meeting_id)
-            except Exception as e:
-                logger.error(f"Failed to trigger integrations for meeting {meeting_id}: {str(e)}")
             return
 
         # ── 3. Call all four functions from ai_tasks.py ──
@@ -243,12 +238,6 @@ def generate_structured_notes(self, meeting_id):
             meeting.status = Meeting.Status.COMPLETED
             meeting.save(update_fields=["status", "updated_at"])
 
-        # Trigger connected third-party integrations
-        try:
-            from integrations.integration_runner import trigger_integrations
-            trigger_integrations(meeting_id)
-        except Exception as e:
-            logger.error(f"Failed to trigger integrations for meeting {meeting_id}: {str(e)}")
 
         logger.info(f"generate_structured_notes completed successfully for meeting {meeting_id}")
 
