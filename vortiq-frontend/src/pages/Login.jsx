@@ -76,7 +76,7 @@ const Login = () => {
   };
 
   return (
-    <div className="split-screen-container" style={{
+    <div className="split-screen-container min-h-screen overflow-y-auto" style={{
       background: isDarkMode
         ? 'radial-gradient(circle at top left, rgba(168,85,247,0.20), transparent 25%), radial-gradient(circle at bottom right, rgba(236,72,153,0.12), transparent 25%), #0B0715'
         : 'linear-gradient(180deg, #FAF8FF, #F3EEFF)',

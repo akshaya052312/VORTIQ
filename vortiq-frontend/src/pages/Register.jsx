@@ -91,7 +91,7 @@ const Register = () => {
   };
 
   return (
-    <div className="auth-page">
+    <div className="auth-page min-h-screen overflow-y-auto">
       <div className="auth-container">
         <div className="auth-glow" />
 
