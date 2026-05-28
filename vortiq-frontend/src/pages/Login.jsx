@@ -98,6 +98,23 @@ const Login = () => {
           transition: background 0.3s ease;
         }
 
+        .split-screen-container::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        .split-screen-container::-webkit-scrollbar-track {
+          background: transparent;
+        }
+
+        .split-screen-container::-webkit-scrollbar-thumb {
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.15)'};
+          border-radius: 10px;
+        }
+
+        .split-screen-container::-webkit-scrollbar-thumb:hover {
+          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)'};
+        }
+
         .left-panel {
           width: 55%;
           position: relative;

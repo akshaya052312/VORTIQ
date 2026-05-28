@@ -65,6 +65,23 @@ html[data-theme="light"] {
   overflow-y: auto;
 }
 
+.auth-page::-webkit-scrollbar {
+  width: 6px;
+}
+
+.auth-page::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.auth-page::-webkit-scrollbar-thumb {
+  background: rgba(126, 118, 147, 0.25);
+  border-radius: 10px;
+}
+
+.auth-page::-webkit-scrollbar-thumb:hover {
+  background: rgba(126, 118, 147, 0.45);
+}
+
 .auth-glow {
   position: absolute;
   width: 400px;
