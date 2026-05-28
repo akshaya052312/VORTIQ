@@ -111,39 +111,16 @@ ASGI_APPLICATION = "vortiq.asgi.application"
 # Database — PostgreSQL via DATABASE_URL
 # ──────────────────────────────────────────────
 
-DATABASE_URL = os.getenv("DATABASE_URL", "")
+import dj_database_url
+import os
 
-if DATABASE_URL:
-    # Parse: postgres://user:password@host:port/dbname
-    _db_url = DATABASE_URL.replace("postgres://", "").replace("postgresql://", "")
-    _user_pass, _host_db = _db_url.split("@")
-    _user, _password = _user_pass.split(":")
-    _host_port, _dbname = _host_db.split("/")
-
-    if ":" in _host_port:
-        _host, _port = _host_port.split(":")
-    else:
-        _host = _host_port
-        _port = "5432"
-
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.postgresql",
-            "NAME": _dbname,
-            "USER": _user,
-            "PASSWORD": _password,
-            "HOST": _host,
-            "PORT": _port,
-        }
-    }
-else:
-    # Fallback to SQLite for local development without PostgreSQL
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.sqlite3",
-            "NAME": BASE_DIR / "db.sqlite3",
-        }
-    }
+DATABASES = {
+    'default': dj_database_url.config(
+        default=os.environ.get('DATABASE_URL'),
+        conn_max_age=600,
+        ssl_require=True,
+    )
+}
 
 # ──────────────────────────────────────────────
 # Password Validation
