@@ -21,7 +21,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:8000/api/auth/google/";
+    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google/`;
   };
 
   // Redirect if already authenticated

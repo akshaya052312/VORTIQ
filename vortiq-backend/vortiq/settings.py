@@ -213,13 +213,12 @@ SIMPLE_JWT = {
 # CORS
 # ──────────────────────────────────────────────
 
-CORS_ALLOWED_ORIGINS = [
-    "https://vortiq-zeta.vercel.app",
-    "https://vortiq-git-main-akshaya052312s-projects.vercel.app",
-    "https://vortiq-ucwq6bt57-akshaya052312s-projects.vercel.app",
-    "http://localhost:5173",
-    "http://localhost:3000",
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://vortiq-zeta\.vercel\.app$",
+    r"^https://vortiq-.*\.vercel\.app$",
+    r"^http://localhost:\d+$",
 ]
+
 CORS_ALLOW_CREDENTIALS = True
 
 # ──────────────────────────────────────────────
