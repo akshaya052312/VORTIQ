@@ -82,12 +82,14 @@ class GoogleAuthTokenView(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
+        import os
         from django.shortcuts import redirect
         access_token = request.session.pop('jwt_access', None)
         refresh_token = request.session.pop('jwt_refresh', None)
 
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173").rstrip('/')
         if access_token and refresh_token:
-            return redirect(f"http://localhost:5173/dashboard?access={access_token}&refresh={refresh_token}")
+            return redirect(f"{frontend_url}/dashboard?access={access_token}&refresh={refresh_token}")
         else:
-            return redirect("http://localhost:5173/login?error=auth_failed")
+            return redirect(f"{frontend_url}/login?error=auth_failed")
 

@@ -198,12 +198,22 @@ CORS_ALLOW_CREDENTIALS = True
 # Celery (Redis broker)
 # ──────────────────────────────────────────────
 
+import ssl
+
 CELERY_BROKER_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 CELERY_RESULT_BACKEND = os.getenv("REDIS_URL", "redis://localhost:6379/0")
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "UTC"
+
+if CELERY_BROKER_URL.startswith("rediss://"):
+    CELERY_BROKER_USE_SSL = {
+        "ssl_cert_reqs": ssl.CERT_NONE
+    }
+    CELERY_REDIS_BACKEND_USE_SSL = {
+        "ssl_cert_reqs": ssl.CERT_NONE
+    }
 
 # ──────────────────────────────────────────────
 # Custom User Model & Auth Backend
@@ -227,14 +237,33 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 # Django Channels — Redis Channel Layer
 # ──────────────────────────────────────────────
 
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [os.getenv("REDIS_URL", "redis://localhost:6379/0")],
+redis_url = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+if redis_url.startswith("rediss://"):
+    import ssl
+    ssl_context = ssl.create_default_context()
+    ssl_context.check_hostname = False
+    ssl_context.verify_mode = ssl.CERT_NONE
+
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [{
+                    "address": redis_url,
+                    "ssl": ssl_context,
+                }],
+            },
         },
-    },
-}
+    }
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "hosts": [redis_url],
+            },
+        },
+    }
 
 # ──────────────────────────────────────────────
 # Slack Integration Settings
