@@ -1,15 +1,7 @@
-/**
- * Axios instance for Vortiq API.
- *
- * - Reads base URL from VITE_API_BASE_URL env variable.
- * - Automatically attaches the JWT access token from localStorage
- *   to every request's Authorization header.
- * - No hardcoded URLs or tokens.
- */
-
 import axios from "axios";
 
-let apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "";
+let apiBaseUrl = import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "";
+
 if (apiBaseUrl.endsWith("/api/")) {
   apiBaseUrl = apiBaseUrl.slice(0, -5);
 } else if (apiBaseUrl.endsWith("/api")) {
@@ -35,17 +27,24 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// ── Response interceptor: handle 401 (expired token) ──
+// ── Response interceptor ──
 axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response && error.response.status === 401) {
-      // Clear stored tokens and redirect to login
+    const status = error.response?.status;
+    const isLoginRoute = error.config?.url?.includes("/auth/login");
+    const isRegisterRoute = error.config?.url?.includes("/auth/register");
+
+    // Only auto-logout on 401 for non-auth routes
+    // (login/register 401 = wrong credentials, not expired session)
+    if (status === 401 && !isLoginRoute && !isRegisterRoute) {
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
+      localStorage.removeItem("user");
       window.location.href = "/login";
     }
-    return Promise.reject(error);
+
+    return Promise.reject(error); // always let caller handle the error
   }
 );
 
