@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "../context/ThemeContext";
 import { getMeetingDetail } from "../api/meetings";
 import MeetingLayout from "../components/MeetingLayout";
 import "./MeetingNotes.css";
@@ -16,49 +17,6 @@ const TABS = [
         <line x1="16" y1="13" x2="8" y2="13" />
         <line x1="16" y1="17" x2="8" y2="17" />
         <polyline points="10 9 9 9 8 9" />
-      </svg>
-    ),
-  },
-  {
-    id: "action_items",
-    label: "Action Items",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <polyline points="9 11 12 14 22 4" />
-        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-      </svg>
-    ),
-  },
-  {
-    id: "speaker_segments",
-    label: "Speaker Breakdown",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-        <circle cx="9" cy="7" r="4" />
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-      </svg>
-    ),
-  },
-  {
-    id: "decisions",
-    label: "Decisions",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="12" cy="12" r="10" />
-        <polyline points="12 6 12 12 16 14" />
-      </svg>
-    ),
-  },
-  {
-    id: "open_questions",
-    label: "Open Questions",
-    icon: (
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-        <circle cx="12" cy="12" r="10" />
-        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-        <line x1="12" y1="17" x2="12.01" y2="17" />
       </svg>
     ),
   },
@@ -85,6 +43,7 @@ const VortiqLoadingScreen = ({ message }) => (
 const MeetingNotes = () => {
   const { meetingId } = useParams();
   const { user, logout } = useAuth();
+  const { isDarkMode } = useTheme();
   const navigate = useNavigate();
 
   const [meeting, setMeeting] = useState(null);
@@ -164,178 +123,19 @@ const MeetingNotes = () => {
   };
 
   const renderTabContent = (notes) => {
-    switch (activeTab) {
-      case "summary":
-        return (
-          <div className="mn-tab-content-inner">
-            <div className="mn-content-header">
-              <h2 className="mn-content-title">Summary</h2>
-              <p className="mn-content-subtitle">AI-generated overview of the meeting</p>
-            </div>
-            <div className="mn-summary-card">
-              <p className="mn-summary-text">
-                {notes.summary || "No summary available."}
-              </p>
-            </div>
-          </div>
-        );
-
-      case "action_items":
-        return (
-          <div className="mn-tab-content-inner">
-            <div className="mn-content-header">
-              <h2 className="mn-content-title">Action Items</h2>
-              <p className="mn-content-subtitle">
-                {notes.action_items?.length || 0} task{notes.action_items?.length !== 1 ? "s" : ""} identified
-              </p>
-            </div>
-            {notes.action_items && notes.action_items.length > 0 ? (
-              <div className="mn-table-wrap">
-                <table className="mn-action-table">
-                  <thead>
-                    <tr>
-                      <th>#</th>
-                      <th>Assignee</th>
-                      <th>Task</th>
-                      <th>Deadline</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {notes.action_items.map((item, idx) => (
-                      <tr key={idx}>
-                        <td className="mn-row-num">{idx + 1}</td>
-                        <td>
-                          <div className="mn-assignee-chip">
-                            <span className="mn-assignee-avatar">
-                              {item.assignee?.charAt(0)?.toUpperCase() || "?"}
-                            </span>
-                            <strong>{item.assignee}</strong>
-                          </div>
-                        </td>
-                        <td className="mn-task-cell">{item.task}</td>
-                        <td>
-                          {item.deadline ? (
-                            <span className="mn-deadline-chip">{item.deadline}</span>
-                          ) : (
-                            <span className="mn-no-deadline">No deadline</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="mn-empty-state">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <polyline points="9 11 12 14 22 4" />
-                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-                </svg>
-                <p>No action items detected in this meeting.</p>
-              </div>
-            )}
-          </div>
-        );
-
-      case "speaker_segments":
-        return (
-          <div className="mn-tab-content-inner">
-            <div className="mn-content-header">
-              <h2 className="mn-content-title">Speaker Breakdown</h2>
-              <p className="mn-content-subtitle">
-                {notes.speaker_segments?.length || 0} segment{notes.speaker_segments?.length !== 1 ? "s" : ""} identified
-              </p>
-            </div>
-            {notes.speaker_segments && notes.speaker_segments.length > 0 ? (
-              <div className="mn-speaker-list">
-                {notes.speaker_segments.map((seg, idx) => (
-                  <div key={idx} className="mn-speaker-turn">
-                    <div className="mn-speaker-avatar">
-                      {seg.speaker?.charAt(0)?.toUpperCase() || "?"}
-                    </div>
-                    <div className="mn-speaker-bubble">
-                      <span className="mn-speaker-name">{seg.speaker}</span>
-                      <p className="mn-speaker-text">{seg.text}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="mn-empty-state">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                </svg>
-                <p>No speaker breakdown available.</p>
-              </div>
-            )}
-          </div>
-        );
-
-      case "decisions":
-        return (
-          <div className="mn-tab-content-inner">
-            <div className="mn-content-header">
-              <h2 className="mn-content-title">Decisions Made</h2>
-              <p className="mn-content-subtitle">
-                {notes.decisions?.length || 0} decision{notes.decisions?.length !== 1 ? "s" : ""} recorded
-              </p>
-            </div>
-            {notes.decisions && notes.decisions.length > 0 ? (
-              <ol className="mn-decisions-list">
-                {notes.decisions.map((decision, idx) => (
-                  <li key={idx} className="mn-decision-item">
-                    <span className="mn-decision-num">{idx + 1}</span>
-                    <p>{decision}</p>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <div className="mn-empty-state">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
-                </svg>
-                <p>No decisions recorded for this meeting.</p>
-              </div>
-            )}
-          </div>
-        );
-
-      case "open_questions":
-        return (
-          <div className="mn-tab-content-inner">
-            <div className="mn-content-header">
-              <h2 className="mn-content-title">Open Questions</h2>
-              <p className="mn-content-subtitle">
-                {notes.open_questions?.length || 0} question{notes.open_questions?.length !== 1 ? "s" : ""} remaining
-              </p>
-            </div>
-            {notes.open_questions && notes.open_questions.length > 0 ? (
-              <ol className="mn-questions-list">
-                {notes.open_questions.map((question, idx) => (
-                  <li key={idx} className="mn-question-item">
-                    <span className="mn-question-num">{idx + 1}</span>
-                    <p>{question}</p>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <div className="mn-empty-state">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
-                  <line x1="12" y1="17" x2="12.01" y2="17" />
-                </svg>
-                <p>No open questions detected.</p>
-              </div>
-            )}
-          </div>
-        );
-
-      default:
-        return null;
-    }
+    return (
+      <div className="mn-tab-content-inner">
+        <div className="mn-content-header">
+          <h2 className="mn-content-title">Summary</h2>
+          <p className="mn-content-subtitle">AI-generated overview of the meeting</p>
+        </div>
+        <div className="mn-summary-card">
+          <p className="mn-summary-text">
+            {notes.summary || "No summary available."}
+          </p>
+        </div>
+      </div>
+    );
   };
 
   // ── Loading State ──────────────────────────────────────────────────────────

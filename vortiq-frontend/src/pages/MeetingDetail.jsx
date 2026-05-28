@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "../context/ThemeContext";
 import { getMeetingDetail } from "../api/meetings";
 import { useCollaborativeNotes } from "../hooks/useCollaborativeNotes";
 import MeetingLayout from "../components/MeetingLayout";
@@ -9,6 +10,7 @@ import "./MeetingDetail.css";
 const MeetingDetail = () => {
   const { meetingId } = useParams();
   const { logout } = useAuth();
+  const { isDarkMode } = useTheme();
   const navigate = useNavigate();
 
   const [meeting, setMeeting] = useState(null);
@@ -16,6 +18,7 @@ const MeetingDetail = () => {
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
   const [transcriptOpen, setTranscriptOpen] = useState(false);
+  const [gridColumns, setGridColumns] = useState(window.innerWidth >= 768 ? "1fr 1fr" : "1fr");
   const pollIntervalRef = useRef(null);
 
   // States for local editing inputs to prevent cursor jump / input stutter
@@ -76,6 +79,16 @@ const MeetingDetail = () => {
       }
     };
   }, [meeting]);
+
+  // Responsive grid layout
+  useEffect(() => {
+    const handleResize = () => {
+      setGridColumns(window.innerWidth >= 768 ? "1fr 1fr" : "1fr");
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   // Instantiate collaborative notes hook
   const { notes, updateField, isConnected, activeUsers, toast } = useCollaborativeNotes(
@@ -237,7 +250,7 @@ const MeetingDetail = () => {
               {/* Google Docs style active presence avatars */}
               {activeUsers && activeUsers.length > 0 && (
                 <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-                  <span style={{ fontSize: "0.75rem", color: "#71717a", marginRight: "4px", fontWeight: "700", letterSpacing: "0.05em" }}>
+                  <span style={{ fontSize: "0.75rem", color: isDarkMode ? "#71717a" : "#6F6882", marginRight: "4px", fontWeight: "700", letterSpacing: "0.05em" }}>
                     ACTIVE:
                   </span>
                   {activeUsers.map((name) => {
@@ -263,7 +276,7 @@ const MeetingDetail = () => {
                           justifyContent: "center",
                           fontSize: "0.75rem",
                           fontWeight: "bold",
-                          border: "2px solid #0a0a0f",
+                          border: `2px solid ${isDarkMode ? "#0a0a0f" : "#E9E5F3"}`,
                           boxShadow: "0 0 4px rgba(0,0,0,0.5)",
                           cursor: "default",
                           userSelect: "none"
@@ -304,37 +317,150 @@ const MeetingDetail = () => {
               <div className="completed-meeting-layout">
                 {notes ? (
                   <div className="structured-notes-container">
-                    {/* 1) Summary Section */}
-                    <section id="summary" className="detail-section summary-section">
-                      <h2 className="section-title">Summary</h2>
-                      <textarea
-                        className="editable-summary-textarea"
-                        value={summaryVal}
-                        onChange={(e) => setSummaryVal(e.target.value)}
-                        onBlur={handleSummaryBlur}
-                        placeholder="Edit summary..."
-                      />
-                      {notes.last_edited_by_name && (
-                        <div className="last-edited-attribution">
-                          Last edited by {notes.last_edited_by_name}{" "}
-                          {notes.last_edited_at && `at ${formatDate(notes.last_edited_at)}`}
+                    {/* 2-Column Grid for Detail Sections */}
+                    <div style={{
+                      display: "grid",
+                      gridTemplateColumns: gridColumns,
+                      gap: "20px",
+                      marginTop: "24px"
+                    }}>
+                      {/* 1) Action Items Section */}
+                      <section id="action_items" className="detail-section">
+                      <h2 className="section-title">Action Items</h2>
+                      {notes.action_items && notes.action_items.length > 0 ? (
+                        <div className="mn-table-wrap">
+                          <table className="mn-action-table">
+                            <thead>
+                              <tr>
+                                <th>#</th>
+                                <th>Assignee</th>
+                                <th>Task</th>
+                                <th>Deadline</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {notes.action_items.map((item, idx) => (
+                                <tr key={idx}>
+                                  <td className="mn-row-num">{idx + 1}</td>
+                                  <td>
+                                    <div className="mn-assignee-chip">
+                                      <span className="mn-assignee-avatar">
+                                        {item.assignee?.charAt(0)?.toUpperCase() || "?"}
+                                      </span>
+                                      <strong>{item.assignee}</strong>
+                                    </div>
+                                  </td>
+                                  <td className="mn-task-cell">{item.task}</td>
+                                  <td>
+                                    {item.deadline ? (
+                                      <span className="mn-deadline-chip">{item.deadline}</span>
+                                    ) : (
+                                      <span className="mn-no-deadline">No deadline</span>
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      ) : (
+                        <div className="mn-empty-state">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <polyline points="9 11 12 14 22 4" />
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
+                          </svg>
+                          <p>No action items detected in this meeting.</p>
                         </div>
                       )}
                     </section>
 
-                    {/* Integrations Section */}
+                    {/* 2) Speaker Breakdown Section */}
+                    <section id="speaker_segments" className="detail-section">
+                      <h2 className="section-title">Speaker Breakdown</h2>
+                      {notes.speaker_segments && notes.speaker_segments.length > 0 ? (
+                        <div className="mn-speaker-list">
+                          {notes.speaker_segments.map((seg, idx) => (
+                            <div key={idx} className="mn-speaker-turn">
+                              <div className="mn-speaker-avatar">
+                                {seg.speaker?.charAt(0)?.toUpperCase() || "?"}
+                              </div>
+                              <div className="mn-speaker-bubble">
+                                <span className="mn-speaker-name">{seg.speaker}</span>
+                                <p className="mn-speaker-text">{seg.text}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="mn-empty-state">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                          </svg>
+                          <p>No speaker breakdown available.</p>
+                        </div>
+                      )}
+                    </section>
+
+                    {/* 3) Decisions Section */}
+                    <section id="decisions" className="detail-section">
+                      <h2 className="section-title">Decisions Made</h2>
+                      {notes.decisions && notes.decisions.length > 0 ? (
+                        <ol className="mn-decisions-list">
+                          {notes.decisions.map((decision, idx) => (
+                            <li key={idx} className="mn-decision-item">
+                              <span className="mn-decision-num">{idx + 1}</span>
+                              <p>{decision}</p>
+                            </li>
+                          ))}
+                        </ol>
+                      ) : (
+                        <div className="mn-empty-state">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                          </svg>
+                          <p>No decisions recorded for this meeting.</p>
+                        </div>
+                      )}
+                    </section>
+
+                    {/* 4) Open Questions Section */}
+                    <section id="open_questions" className="detail-section">
+                      <h2 className="section-title">Open Questions</h2>
+                      {notes.open_questions && notes.open_questions.length > 0 ? (
+                        <ol className="mn-questions-list">
+                          {notes.open_questions.map((question, idx) => (
+                            <li key={idx} className="mn-question-item">
+                              <span className="mn-question-num">{idx + 1}</span>
+                              <p>{question}</p>
+                            </li>
+                          ))}
+                        </ol>
+                      ) : (
+                        <div className="mn-empty-state">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                            <circle cx="12" cy="12" r="10" />
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+                            <line x1="12" y1="17" x2="12.01" y2="17" />
+                          </svg>
+                          <p>No open questions detected.</p>
+                        </div>
+                      )}
+                    </section>
+                    </div>
                     {meeting.integration_logs && meeting.integration_logs.length > 0 && (
                       <section style={{
                         marginTop: "2rem",
                         padding: "1.5rem",
-                        backgroundColor: "rgba(255, 255, 255, 0.02)",
-                        border: "1px solid rgba(255, 255, 255, 0.05)",
+                        backgroundColor: isDarkMode ? "rgba(255, 255, 255, 0.02)" : "rgba(139, 92, 246, 0.05)",
+                        border: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(139, 92, 246, 0.1)"}`,
                         borderRadius: "12px",
                       }}>
                         <h2 style={{
                           fontSize: "1.2rem",
                           fontWeight: "600",
-                          color: "#f4f4f5",
+                          color: isDarkMode ? "#f4f4f5" : "#1E1B2E",
                           marginBottom: "1rem",
                           letterSpacing: "-0.01em",
                         }}>
@@ -357,8 +483,8 @@ const MeetingDetail = () => {
                                 justifyItem: "center",
                                 justifyContent: "space-between",
                                 padding: "0.75rem 1rem",
-                                backgroundColor: "rgba(255, 255, 255, 0.01)",
-                                border: "1px solid rgba(255, 255, 255, 0.03)",
+                                backgroundColor: isDarkMode ? "rgba(255, 255, 255, 0.01)" : "rgba(139, 92, 246, 0.03)",
+                                border: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.03)" : "rgba(139, 92, 246, 0.08)"}`,
                                 borderRadius: "8px",
                               }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
@@ -372,7 +498,7 @@ const MeetingDetail = () => {
                                     {isSuccess ? "✓" : "X"}
                                   </span>
                                   <span style={{
-                                    color: "#e4e4e7",
+                                    color: isDarkMode ? "#e4e4e7" : "#1E1B2E",
                                     fontWeight: "500",
                                     fontSize: "0.95rem",
                                   }}>
@@ -380,7 +506,7 @@ const MeetingDetail = () => {
                                   </span>
                                 </div>
                                 <span style={{
-                                  color: "#a1a1aa",
+                                  color: isDarkMode ? "#a1a1aa" : "#6F6882",
                                   fontSize: "0.85rem",
                                 }}>
                                   {formatDate(log.ran_at)}

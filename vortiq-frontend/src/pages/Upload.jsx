@@ -8,7 +8,7 @@ const ALLOWED_EXTENSIONS = [".mp3", ".wav", ".m4a"];
 const MAX_FILE_SIZE_MB = 50;
 
 const Upload = () => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
@@ -335,6 +335,21 @@ const Upload = () => {
           <div className="navbar-brand">
             <Link to="/" className="navbar-logo">Vortiq</Link>
           </div>
+          <div className="navbar-actions">
+            <Link to="/" className="nav-link-btn">Dashboard</Link>
+            <div className="user-profile">
+              <div className="user-avatar">
+                {user?.full_name ? user.full_name.charAt(0).toUpperCase() : "U"}
+              </div>
+              <div className="user-info">
+                <span className="user-name">{user?.full_name || "User"}</span>
+                <span className="user-email">{user?.email}</span>
+              </div>
+            </div>
+            <button onClick={handleLogout} className="logout-btn">
+              Log Out
+            </button>
+          </div>
         </header>
         <main className="dashboard-content upload-content-layout">
           <div className="upload-card text-center polling-view-card">
@@ -388,15 +403,21 @@ const Upload = () => {
 
   return (
     <div className="dashboard-layout">
-      {/* Navbar */}
       <header className="navbar">
         <div className="navbar-brand">
           <Link to="/" className="navbar-logo">Vortiq</Link>
         </div>
         <div className="navbar-actions">
-          <Link to="/" className="nav-link-btn">
-            Back to Dashboard
-          </Link>
+          <Link to="/" className="nav-link-btn">Dashboard</Link>
+          <div className="user-profile">
+            <div className="user-avatar">
+              {user?.full_name ? user.full_name.charAt(0).toUpperCase() : "U"}
+            </div>
+            <div className="user-info">
+              <span className="user-name">{user?.full_name || "User"}</span>
+              <span className="user-email">{user?.email}</span>
+            </div>
+          </div>
           <button onClick={handleLogout} className="logout-btn">
             Log Out
           </button>

@@ -1,0 +1,88 @@
+/* Vortiq Frontend Theme System & Design Tokens */
+
+:root {
+  /* Shared design tokens */
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+  --glass-blur: blur(20px);
+  --glass-blur-strong: blur(40px);
+  --shadow-glass: 0 8px 32px rgba(59, 19, 96, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --shadow-glass-hover: 0 16px 48px rgba(59, 19, 96, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  --shadow-glow: 0 0 40px rgba(155, 111, 212, 0.20);
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Card shadow compatibility mapping */
+  --shadow-card: var(--shadow-glass);
+  --shadow-card-hover: var(--shadow-glass-hover);
+}
+
+/* Light Theme */
+:root[data-theme="light"] {
+  --color-bg-base: #F3EEF9;
+  --color-bg-gradient: linear-gradient(135deg, #F3EEF9 0%, #EBE4F6 50%, #E2D8F2 100%);
+  --color-surface: rgba(255, 255, 255, 0.75);
+  --color-surface-hover: rgba(255, 255, 255, 0.92);
+  --color-surface-strong: rgba(255, 255, 255, 0.95);
+  --color-glass-border: rgba(59, 19, 96, 0.10);
+  --color-glass-border-hover: rgba(59, 19, 96, 0.20);
+  --color-primary: #C9956A;
+  --color-primary-soft: rgba(201, 149, 106, 0.12);
+  --color-accent: #3B1360;
+  --color-accent-soft: rgba(59, 19, 96, 0.08);
+  --color-text-primary: #1A0E2E;
+  --color-text-secondary: rgba(26, 14, 46, 0.58);
+  --color-text-muted: rgba(26, 14, 46, 0.35);
+  --color-border: rgba(59, 19, 96, 0.10);
+  --color-success: #3A9E6F;
+  --color-warning: #B07A10;
+  --color-danger: #C0392B;
+  --color-success-soft: rgba(58, 158, 111, 0.10);
+  --color-warning-soft: rgba(176, 122, 16, 0.10);
+  --color-danger-soft: rgba(192, 57, 43, 0.10);
+
+  /* Compatibility mappings */
+  --color-bg: var(--color-bg-base);
+  --color-surface-secondary: var(--color-surface-hover);
+  --color-pill-bg: var(--color-accent-soft);
+  --color-pill-text: var(--color-accent);
+  --color-accent-muted: var(--color-accent-soft);
+}
+
+/* Dark/Night Theme */
+:root[data-theme="dark"], :root {
+  --color-bg-base: #1A0020;
+  --color-bg-gradient: linear-gradient(135deg, #1A0020 0%, #2A0035 35%, #3D0050 65%, #4A0060 100%);
+  --color-surface: rgba(102,0,102,0.18);
+  --color-surface-hover: rgba(102,0,102,0.26);
+  --color-surface-strong: rgba(102,0,102,0.32);
+  --color-glass-border: rgba(180,80,180,0.18);
+  --color-glass-border-hover: rgba(200,100,200,0.28);
+  --color-primary: #C9956A;
+  --color-primary-soft: rgba(201, 149, 106, 0.12);
+  --color-accent: #9B6FD4;
+  --color-accent-soft: rgba(138, 95, 196, 0.15);
+  --color-text-primary: #F0ECF8;
+  --color-text-secondary: rgba(240, 236, 248, 0.55);
+  --color-text-muted: rgba(240, 236, 248, 0.30);
+  --color-border: rgba(255, 255, 255, 0.09);
+  --color-success: rgba(91, 185, 140, 0.85);
+  --color-warning: rgba(232, 168, 56, 0.85);
+  --color-danger: rgba(224, 92, 92, 0.85);
+  --color-success-soft: rgba(91, 185, 140, 0.10);
+  --color-warning-soft: rgba(232, 168, 56, 0.10);
+  --color-danger-soft: rgba(224, 92, 92, 0.10);
+
+  /* Compatibility mappings */
+  --color-bg: var(--color-bg-base);
+  --color-surface-secondary: var(--color-surface-hover);
+  --color-pill-bg: var(--color-accent-soft);
+  --color-pill-text: var(--color-accent);
+  --color-accent-muted: var(--color-accent);
+}
+

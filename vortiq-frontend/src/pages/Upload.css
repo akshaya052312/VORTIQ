@@ -10,13 +10,20 @@
 .upload-card {
   width: 100%;
   max-width: 580px;
-  background: rgba(20, 20, 30, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-  padding: 2.5rem;
+  background: var(--color-surface);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass);
+  padding: 20px 24px;
+  transition: var(--transition);
+}
+
+.upload-card:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-glass-border-hover);
+  box-shadow: var(--shadow-glass-hover);
 }
 
 .upload-header {
@@ -24,17 +31,18 @@
 }
 
 .upload-title {
-  font-size: 1.6rem;
+  font-family: var(--font-display);
+  font-size: 26px;
   font-weight: 700;
-  color: #ffffff;
-  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  letter-spacing: -0.4px;
   margin-bottom: 0.5rem;
 }
 
 .upload-subtitle {
-  font-size: 0.95rem;
-  color: #71717a;
-  line-height: 1.5;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .upload-form {
@@ -47,26 +55,25 @@
 .nav-link-btn {
   display: inline-flex;
   align-items: center;
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  color: #a1a1aa;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  padding: 11px 28px;
+  background: linear-gradient(135deg, rgba(155,111,212,0.25), rgba(155,111,212,0.15));
+  border: 1px solid var(--color-glass-border-hover);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  transition: var(--transition);
 }
 
 .nav-link-btn:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(155,111,212,0.30);
+  opacity: 1;
 }
 
 /* Tab Selector Styling */
 .upload-tabs {
   display: flex;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--color-border);
   margin-bottom: 1.5rem;
   gap: 1rem;
 }
@@ -75,21 +82,21 @@
   background: none;
   border: none;
   padding: 0.75rem 1rem;
-  color: #71717a;
-  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   border-bottom: 2px solid transparent;
-  transition: all 0.25s ease;
+  transition: var(--transition);
 }
 
 .tab-btn:hover:not(:disabled) {
-  color: #e4e4e7;
+  color: var(--color-text-primary);
 }
 
 .tab-btn-active {
-  color: #a78bfa;
-  border-bottom-color: #8b5cf6;
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
 }
 
 .tab-btn:disabled {
@@ -109,23 +116,27 @@
   align-items: center;
   justify-content: center;
   padding: 2.5rem 2rem;
-  border: 2px dashed rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.01);
+  border: 2px dashed var(--color-glass-border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: var(--transition);
   position: relative;
   text-align: center;
+  box-shadow: var(--shadow-glass);
 }
 
 .dropzone:hover {
-  border-color: #8b5cf6;
-  background: rgba(139, 92, 246, 0.03);
+  border-color: var(--color-glass-border-hover);
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: var(--shadow-glass-hover);
 }
 
 .dropzone-active {
-  border-color: #a78bfa;
-  background: rgba(139, 92, 246, 0.08);
+  border-color: var(--color-glass-border-hover);
+  background: rgba(255, 255, 255, 0.06);
   transform: scale(1.01);
 }
 
@@ -139,7 +150,7 @@
 .dropzone-icon {
   width: 3rem;
   height: 3rem;
-  color: #a1a1aa;
+  color: var(--color-text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -147,36 +158,36 @@
 }
 
 .dropzone:hover .dropzone-icon {
-  color: #c084fc;
+  color: var(--color-accent);
 }
 
 .dropzone-text {
-  font-size: 0.95rem;
-  color: #e4e4e7;
+  font-size: 14px;
+  color: var(--color-text-primary);
   font-weight: 500;
 }
 
 .browse-link {
-  color: #a78bfa;
+  color: var(--color-accent);
   text-decoration: underline;
   cursor: pointer;
 }
 
 .dropzone-subtext {
-  font-size: 0.8rem;
-  color: #71717a;
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 .dropzone-error {
-  border-color: rgba(239, 68, 68, 0.5);
-  background: rgba(239, 68, 68, 0.02);
+  border-color: var(--color-danger);
+  background: rgba(224, 92, 92, 0.02);
 }
 
 /* File selected state */
 .dropzone-has-file {
   border-style: solid;
-  border-color: rgba(139, 92, 246, 0.3);
-  background: rgba(139, 92, 246, 0.05);
+  border-color: var(--color-accent);
+  background: var(--color-surface);
   cursor: default;
 }
 
@@ -191,9 +202,9 @@
 .file-icon {
   width: 2.5rem;
   height: 2.5rem;
-  border-radius: 8px;
-  background: rgba(139, 92, 246, 0.2);
-  color: #a78bfa;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -206,9 +217,9 @@
 }
 
 .file-name {
-  font-size: 0.95rem;
+  font-size: 14px;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--color-text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -216,29 +227,29 @@
 }
 
 .file-size {
-  font-size: 0.8rem;
-  color: #a1a1aa;
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 .remove-file-btn {
   width: 2rem;
   height: 2rem;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #a1a1aa;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
-  transition: all 0.2s ease;
+  transition: var(--transition);
 }
 
 .remove-file-btn:hover {
-  background: rgba(239, 68, 68, 0.1);
-  border-color: rgba(239, 68, 68, 0.2);
-  color: #f87171;
+  background: #FDECEC;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
 }
 
 .remove-file-btn svg {
@@ -248,16 +259,20 @@
 
 /* Microphone Recorder Panel */
 .recorder-panel {
-  background: rgba(255, 255, 255, 0.01);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 12px;
-  padding: 2.5rem 1.5rem;
+  background: var(--color-surface);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass);
+  padding: 20px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   min-height: 220px;
+  transition: var(--transition);
 }
 
 /* Live state: recording */
@@ -280,7 +295,7 @@
 .recording-wave-dot {
   width: 1rem;
   height: 1rem;
-  background-color: #ef4444;
+  background-color: var(--color-danger);
   border-radius: 50%;
   z-index: 2;
 }
@@ -289,7 +304,7 @@
   position: absolute;
   width: 2.5rem;
   height: 2.5rem;
-  background-color: rgba(239, 68, 68, 0.3);
+  background-color: rgba(224, 92, 92, 0.3);
   border-radius: 50%;
   animation: rec-pulse 1.2s infinite ease-out;
   z-index: 1;
@@ -299,32 +314,30 @@
   font-family: monospace;
   font-size: 2rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--color-text-primary);
   letter-spacing: 0.05em;
 }
 
 .recorder-hint {
-  font-size: 0.875rem;
-  color: #a1a1aa;
+  font-size: 14px;
+  color: var(--color-text-secondary);
   margin-bottom: 0.5rem;
 }
 
 .stop-record-btn {
-  padding: 0.65rem 1.5rem;
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.25);
-  color: #f87171;
-  border-radius: 8px;
+  padding: 11px 28px;
+  background: var(--color-danger-soft);
+  border: 1px solid rgba(224, 92, 92, 0.25);
+  color: var(--color-danger);
+  border-radius: var(--radius-pill);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
 }
 
 .stop-record-btn:hover {
-  background: #ef4444;
-  color: #ffffff;
-  border-color: #ef4444;
+  background: rgba(224, 92, 92, 0.20);
 }
 
 /* Idle / preview states */
@@ -339,9 +352,9 @@
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #a1a1aa;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -349,9 +362,9 @@
 }
 
 .recorder-start-view:hover .mic-icon-container {
-  background: rgba(139, 92, 246, 0.1);
-  border-color: rgba(139, 92, 246, 0.2);
-  color: #a78bfa;
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
   transform: scale(1.05);
 }
 
@@ -361,27 +374,24 @@
 }
 
 .start-record-btn {
-  padding: 0.65rem 1.5rem;
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.2);
-  color: #a78bfa;
-  border-radius: 8px;
+  padding: 11px 28px;
+  background: linear-gradient(135deg, rgba(155, 111, 212, 0.25), rgba(155, 111, 212, 0.15));
+  border: 1px solid var(--color-glass-border-hover);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-pill);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
 }
 
 .start-record-btn:hover {
-  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
-  color: #ffffff;
-  border-color: transparent;
-  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.3);
+  background: rgba(155, 111, 212, 0.30);
 }
 
 .mic-helper-text {
-  font-size: 0.75rem;
-  color: #71717a;
+  font-size: 12px;
+  color: var(--color-text-secondary);
 }
 
 /* Audio preview */
@@ -398,20 +408,21 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.85rem;
-  color: #a1a1aa;
+  font-size: 14px;
+  color: var(--color-text-secondary);
 }
 
 .preview-label {
   font-weight: 600;
-  color: #ffffff;
+  color: var(--color-text-primary);
 }
 
 .audio-preview-player {
   width: 100%;
-  border-radius: 8px;
+  border-radius: var(--radius-sm);
   outline: none;
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-glass-border);
 }
 
 .recorder-actions {
@@ -420,20 +431,19 @@
 }
 
 .re-record-btn {
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  color: #a1a1aa;
-  font-size: 0.85rem;
-  font-weight: 500;
+  padding: 11px 28px;
+  background: linear-gradient(135deg, rgba(155, 111, 212, 0.25), rgba(155, 111, 212, 0.15));
+  border: 1px solid var(--color-glass-border-hover);
+  border-radius: var(--radius-pill);
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
 }
 
 .re-record-btn:hover {
-  background: rgba(255, 255, 255, 0.07);
-  color: #ffffff;
+  background: rgba(155, 111, 212, 0.30);
 }
 
 /* Actions buttons */
@@ -446,49 +456,77 @@
 }
 
 .cancel-btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 10px;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #e4e4e7;
+  padding: 11px 28px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, rgba(155,111,212,0.25), rgba(155,111,212,0.15));
+  border: 1px solid var(--color-glass-border-hover);
+  color: var(--color-text-primary);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   text-align: center;
 }
 
 .cancel-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.15);
+  background: rgba(155,111,212,0.30);
+  opacity: 1;
 }
 
 .submit-btn {
-  padding: 0.75rem 1.5rem;
-  border-radius: 10px;
-  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+  padding: 11px 28px;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, #C9956A 0%, #B07850 100%);
   border: none;
   color: #ffffff;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  box-shadow: 0 4px 20px rgba(201,149,106,0.35);
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 14px rgba(109, 40, 217, 0.25);
+  transition: var(--transition);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 
 .submit-btn:hover:not(:disabled) {
-  opacity: 0.95;
+  box-shadow: 0 6px 28px rgba(201,149,106,0.50);
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.35);
+  opacity: 1;
 }
 
 .submit-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
-  box-shadow: none;
+}
+
+.form-group label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  margin-bottom: 6px;
+}
+
+.form-group input {
+  background: rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--color-glass-border);
+  border-radius: var(--radius-sm);
+  padding: 12px 16px;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  transition: var(--transition);
+  width: 100%;
+}
+
+.form-group input:focus {
+  border-color: rgba(155, 111, 212, 0.55);
+  box-shadow: 0 0 0 3px rgba(155, 111, 212, 0.12);
+  outline: none;
 }
 
 /* Polling view card modifications */
@@ -500,14 +538,16 @@
 }
 
 .polling-title {
-  font-size: 1.45rem;
+  font-family: var(--font-display);
+  font-size: 28px;
   font-weight: 700;
-  color: #ffffff;
+  letter-spacing: -0.5px;
+  color: var(--color-text-primary);
 }
 
 .polling-subtitle {
-  font-size: 0.95rem;
-  color: #71717a;
+  font-size: 14px;
+  color: var(--color-text-secondary);
   margin-top: 0.25rem;
 }
 
@@ -516,13 +556,13 @@
 }
 
 .large-badge {
-  padding: 0.45rem 1.25rem;
-  font-size: 0.95rem;
+  padding: 4px 14px;
+  font-size: 13px;
 }
 
 .polling-advice {
-  font-size: 0.875rem;
-  color: #71717a;
+  font-size: 14px;
+  color: var(--color-text-secondary);
   line-height: 1.6;
   max-width: 360px;
 }
@@ -532,8 +572,8 @@
 }
 
 .error-text {
-  font-size: 0.9rem;
-  color: #f87171;
+  font-size: 14px;
+  color: var(--color-danger);
   line-height: 1.5;
 }
 
@@ -544,7 +584,7 @@
 
 /* Custom red state colors for failure in polling orbs */
 .bg-red-glow {
-  background: #ef4444 !important;
+  background: var(--color-danger) !important;
   opacity: 0.4 !important;
 }
 

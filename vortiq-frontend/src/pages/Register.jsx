@@ -6,6 +6,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import VortiqLogo from "../components/VortiqLogo";
 import "./Auth.css";
 
 const Register = () => {
@@ -115,7 +116,7 @@ const Register = () => {
         <div className="auth-glow" />
 
         <div className="auth-header">
-          <h1 className="auth-logo">Vortiq</h1>
+          <VortiqLogo size={44} isDark={true} />
           <p className="auth-subtitle">Create your account</p>
         </div>
 

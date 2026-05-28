@@ -8,7 +8,8 @@
  *   children     (node)    – The right-side page content to render.
  */
 
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../hooks/useAuth";
 
 const SIDEBAR_WIDTH = 252;
@@ -20,9 +21,9 @@ const styles = {
     display: "flex",
     flexDirection: "column",
     minHeight: "100vh",
-    background: "#0a0a0f",
-    color: "#e4e4e7",
-    fontFamily: "'Inter', 'Outfit', sans-serif",
+    background: "transparent",
+    color: "var(--color-text-primary)",
+    fontFamily: "var(--font-body)",
   },
 
   // Top navbar
@@ -33,46 +34,113 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
-    padding: "0 2rem",
-    height: "60px",
-    background: "rgba(10, 10, 15, 0.85)",
-    backdropFilter: "blur(12px)",
-    WebkitBackdropFilter: "blur(12px)",
-    borderBottom: "1px solid rgba(255,255,255,0.06)",
+    padding: "0 32px",
+    height: "68px",
+    background: "var(--color-surface)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    borderBottom: "1px solid var(--color-glass-border)",
   },
   navBrand: {
-    fontSize: "1.3rem",
-    fontWeight: "800",
-    background: "linear-gradient(135deg, #6366f1, #8b5cf6)",
-    WebkitBackgroundClip: "text",
-    WebkitTextFillColor: "transparent",
+    fontSize: "22px",
+    fontWeight: "700",
+    color: "var(--color-primary)",
+    fontFamily: "var(--font-display)",
     textDecoration: "none",
   },
   navActions: {
     display: "flex",
     alignItems: "center",
-    gap: "0.75rem",
+    gap: "1.5rem",
   },
   navLinkBtn: {
-    padding: "0.4rem 0.9rem",
-    borderRadius: "8px",
-    color: "#a1a1aa",
-    fontSize: "0.875rem",
-    fontWeight: "500",
+    padding: "11px 28px",
+    borderRadius: "999px",
+    background: "var(--color-surface-strong)",
+    border: "1px solid var(--color-glass-border)",
+    color: "var(--color-text-primary)",
+    fontSize: "14px",
+    fontWeight: "600",
     textDecoration: "none",
-    transition: "color 0.15s, background 0.15s",
-    background: "transparent",
+    transition: "var(--transition)",
   },
   logoutBtn: {
-    padding: "0.4rem 0.9rem",
-    borderRadius: "8px",
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.1)",
-    color: "#a1a1aa",
-    fontSize: "0.875rem",
+    padding: "11px 28px",
+    borderRadius: "999px",
+    background: "rgba(255, 255, 255, 0.08)",
+    border: "1px solid var(--color-glass-border)",
+    color: "var(--color-text-primary)",
+    fontSize: "14px",
+    fontWeight: "600",
+    cursor: "pointer",
+    transition: "var(--transition)",
+  },
+  navTabs: {
+    display: "flex",
+    gap: "4px",
+    alignItems: "center",
+  },
+  navTab: {
+    padding: "8px 18px",
+    borderRadius: "20px",
+    border: "1px solid rgba(255, 255, 255, 0.15)",
+    background: "transparent",
+    color: "#8E7A99",
+    fontSize: "14px",
     fontWeight: "500",
     cursor: "pointer",
-    transition: "all 0.15s",
+    textDecoration: "none",
+    transition: "all 0.3s ease",
+  },
+  navTabActive: {
+    background: "rgba(168, 85, 247, 0.20)",
+    border: "1px solid #C084FC",
+    color: "#C084FC",
+  },
+  navTabLight: {
+    border: "1px solid #D9D0EC",
+    color: "#6F6882",
+  },
+  navTabActiveLightMode: {
+    background: "#F1E8FF",
+    border: "1px solid #8B5CF6",
+    color: "#7C3AED",
+  },
+  userProfile: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  userAvatar: {
+    width: "32px",
+    height: "32px",
+    borderRadius: "50%",
+    backgroundColor: "var(--color-accent)",
+    color: "#FFFFFF",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    fontWeight: "600",
+    fontSize: "14px",
+    marginBottom: "2px",
+    border: "none",
+  },
+  userInfo: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  userName: {
+    fontSize: "10px",
+    fontWeight: "600",
+    color: "var(--color-text-primary)",
+    lineHeight: "1.1",
+  },
+  userEmail: {
+    fontSize: "9px",
+    color: "var(--color-text-secondary)",
+    lineHeight: "1.1",
   },
 
   // Body beneath navbar: sidebar + content side by side
@@ -88,12 +156,14 @@ const styles = {
     minWidth: `${SIDEBAR_WIDTH}px`,
     maxWidth: `${SIDEBAR_WIDTH}px`,
     position: "sticky",
-    top: "60px",           // below navbar
-    height: "calc(100vh - 60px)",
+    top: "68px",           // below navbar
+    height: "calc(100vh - 68px)",
     overflowY: "auto",
     overflowX: "hidden",
-    background: "rgba(15,15,22,0.95)",
-    borderRight: "1px solid rgba(255,255,255,0.06)",
+    background: "var(--color-surface)",
+    backdropFilter: "var(--glass-blur)",
+    WebkitBackdropFilter: "var(--glass-blur)",
+    borderRight: "1px solid var(--color-glass-border)",
     display: "flex",
     flexDirection: "column",
     padding: "1.5rem 0 2rem",
@@ -106,56 +176,59 @@ const styles = {
   },
 
   meetingTitleBlock: {
-    padding: "0 1rem 1rem",
-    borderBottom: "1px solid rgba(255,255,255,0.06)",
+    padding: "0 1.5rem 1rem",
+    borderBottom: "1px solid var(--color-border)",
     marginBottom: "0.25rem",
   },
   meetingTitleLabel: {
-    fontSize: "0.65rem",
-    fontWeight: "700",
-    letterSpacing: "0.1em",
-    color: "#52525b",
+    fontSize: "12px",
+    fontWeight: "600",
+    letterSpacing: "0.6px",
+    color: "var(--color-text-secondary)",
     textTransform: "uppercase",
     marginBottom: "0.5rem",
   },
   meetingTitle: {
-    fontSize: "0.875rem",
-    fontWeight: "600",
-    color: "#d4d4d8",
-    lineHeight: "1.4",
+    fontSize: "28px",
+    fontWeight: "700",
+    color: "var(--color-text-primary)",
+    fontFamily: "var(--font-display)",
+    letterSpacing: "-0.5px",
+    lineHeight: "1.3",
     wordBreak: "break-word",
   },
 
   navGroupLabel: {
-    fontSize: "0.65rem",
-    fontWeight: "700",
-    letterSpacing: "0.1em",
-    color: "#52525b",
+    fontSize: "12px",
+    fontWeight: "600",
+    letterSpacing: "0.6px",
+    color: "var(--color-text-secondary)",
     textTransform: "uppercase",
-    padding: "1.25rem 1rem 0.5rem",
+    padding: "1.25rem 1.5rem 0.5rem",
   },
 
   navLink: {
     display: "flex",
     alignItems: "center",
     gap: "0.6rem",
-    padding: "0.5rem 1rem",
-    borderRadius: "8px",
+    padding: "11px 28px",
+    borderRadius: "var(--radius-pill)",
     margin: "0 0.5rem 0.15rem",
-    fontSize: "0.875rem",
+    fontSize: "14px",
     fontWeight: "500",
-    color: "#a1a1aa",
+    color: "var(--color-text-secondary)",
     textDecoration: "none",
-    transition: "all 0.15s",
-    border: "none",
+    transition: "var(--transition)",
+    border: "1px solid transparent",
     background: "transparent",
     cursor: "pointer",
     width: "calc(100% - 1rem)",
     textAlign: "left",
   },
   navLinkActive: {
-    background: "rgba(99,102,241,0.15)",
-    color: "#818cf8",
+    background: "linear-gradient(135deg, rgba(155,111,212,0.25), rgba(155,111,212,0.15))",
+    borderColor: "var(--color-glass-border-hover)",
+    color: "var(--color-text-primary)",
     fontWeight: "600",
   },
 
@@ -184,8 +257,10 @@ const NotesIcon = () => (
 // ── Component ────────────────────────────────────────────────────────────────
 
 const MeetingLayout = ({ meetingId, meetingTitle, activePage, children }) => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { isDarkMode } = useTheme();
 
   const handleLogout = () => {
     logout();
@@ -202,6 +277,40 @@ const MeetingLayout = ({ meetingId, meetingTitle, activePage, children }) => {
         <Link to="/" style={styles.navBrand}>Vortiq</Link>
         <div style={styles.navActions}>
           <Link to="/" style={styles.navLinkBtn}>Dashboard</Link>
+          
+          {/* Navigation Tabs for Meeting Detail/Notes */}
+          <div style={styles.navTabs}>
+            <Link
+              to={`/meetings/${meetingId}`}
+              style={{
+                ...styles.navTab,
+                ...(isDarkMode ? {} : styles.navTabLight),
+                ...(location.pathname === `/meetings/${meetingId}` && (isDarkMode ? styles.navTabActive : styles.navTabActiveLightMode)),
+              }}
+            >
+              Meeting Detail
+            </Link>
+            <Link
+              to={`/meetings/${meetingId}/notes`}
+              style={{
+                ...styles.navTab,
+                ...(isDarkMode ? {} : styles.navTabLight),
+                ...(location.pathname === `/meetings/${meetingId}/notes` && (isDarkMode ? styles.navTabActive : styles.navTabActiveLightMode)),
+              }}
+            >
+              Meeting Notes
+            </Link>
+          </div>
+          
+          <div style={styles.userProfile}>
+            <div style={styles.userAvatar}>
+              {user?.full_name ? user.full_name.charAt(0).toUpperCase() : "U"}
+            </div>
+            <div style={styles.userInfo}>
+              <span style={styles.userName}>{user?.full_name || "User"}</span>
+              <span style={styles.userEmail}>{user?.email}</span>
+            </div>
+          </div>
           <button onClick={handleLogout} style={styles.logoutBtn}>Log Out</button>
         </div>
       </header>
@@ -220,24 +329,7 @@ const MeetingLayout = ({ meetingId, meetingTitle, activePage, children }) => {
             </div>
           </div>
 
-          {/* Navigation links */}
-          <div style={styles.navGroupLabel}>Navigate</div>
 
-          <Link
-            to={`/meetings/${meetingId}`}
-            style={{ ...styles.navLink, ...(isDetail ? styles.navLinkActive : {}) }}
-          >
-            <DetailIcon />
-            Meeting Detail
-          </Link>
-
-          <Link
-            to={`/meetings/${meetingId}/notes`}
-            style={{ ...styles.navLink, ...(isNotes ? styles.navLinkActive : {}) }}
-          >
-            <NotesIcon />
-            Meeting Notes
-          </Link>
         </aside>
 
         {/* ── Main content ── */}

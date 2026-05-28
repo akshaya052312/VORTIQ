@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "meetings.apps.MeetingsConfig",
     "transcriptions.apps.TranscriptionsConfig",
+    "social_django",
 ]
 
 # ──────────────────────────────────────────────
@@ -237,7 +238,9 @@ CELERY_TIMEZONE = "UTC"
 AUTH_USER_MODEL = "users.CustomUser"
 
 AUTHENTICATION_BACKENDS = [
+    "social_core.backends.google.GoogleOAuth2",
     "users.backends.EmailBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
 # ──────────────────────────────────────────────
@@ -282,6 +285,31 @@ NOTION_REDIRECT_URI = os.getenv("NOTION_REDIRECT_URI", "")
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
 GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "")
+
+# Google OAuth2 settings (social-auth-app-django)
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY", "")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET", "")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ["email", "profile"]
+SOCIAL_AUTH_GOOGLE_OAUTH2_IGNORE_DEFAULT_SCOPE = False
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/api/auth/google/token/'
+SOCIAL_AUTH_USER_MODEL = "users.CustomUser"
+SOCIAL_AUTH_USER_FIELDS = ["email", "full_name"]
+SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.auth_allowed',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.social_auth.associate_by_email',
+    'social_core.pipeline.user.get_username',
+    'social_core.pipeline.user.create_user',
+    'users.pipeline.set_full_name',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
+    'users.pipeline.generate_jwt_and_redirect',
+)
 
 # Frontend URL for redirecting after OAuth callback
 FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173")
