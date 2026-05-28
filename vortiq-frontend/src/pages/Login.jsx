@@ -88,7 +88,7 @@ const Login = () => {
           width: 100vw;
           margin: 0;
           padding: 0;
-          overflow: hidden;
+          overflow-y: auto;
           font-family: 'Inter', sans-serif;
           position: fixed;
           top: 0;

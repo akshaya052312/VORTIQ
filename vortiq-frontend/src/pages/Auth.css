@@ -62,7 +62,7 @@ html[data-theme="light"] {
   padding: 2rem;
   background: transparent;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 .auth-glow {
