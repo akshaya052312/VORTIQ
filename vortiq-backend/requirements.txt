@@ -14,3 +14,4 @@ daphne>=4.2,<5.0
 google-auth>=2.22.0
 google-auth-oauthlib>=1.1.0
 social-auth-app-django>=5.4.0
+gunicorn>=21.2,<22.0
