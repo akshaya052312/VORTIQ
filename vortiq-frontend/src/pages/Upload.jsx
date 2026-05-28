@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { uploadMeeting, getMeetingDetail } from "../api/meetings";
 import "./Upload.css";
+import { getErrorMessage } from "../utils/errorHelper";
 
 const ALLOWED_EXTENSIONS = [".mp3", ".wav", ".m4a"];
 const MAX_FILE_SIZE_MB = 50;
@@ -269,22 +270,18 @@ const Upload = () => {
     } catch (err) {
       console.error("Upload error:", err);
       const data = err.response?.data;
-      if (data) {
-        if (typeof data === "object") {
-          const errorsObj = {};
-          if (data.title) errorsObj.title = Array.isArray(data.title) ? data.title.join(" ") : data.title;
-          if (data.audio_file) errorsObj.audio_file = Array.isArray(data.audio_file) ? data.audio_file.join(" ") : data.audio_file;
+      if (data && typeof data === "object") {
+        const errorsObj = {};
+        if (data.title) errorsObj.title = Array.isArray(data.title) ? data.title.join(" ") : String(data.title);
+        if (data.audio_file) errorsObj.audio_file = Array.isArray(data.audio_file) ? data.audio_file.join(" ") : String(data.audio_file);
 
-          if (Object.keys(errorsObj).length > 0) {
-            setFieldErrors(errorsObj);
-          } else {
-            setError(data.message || data.error || "Failed to upload meeting.");
-          }
+        if (Object.keys(errorsObj).length > 0) {
+          setFieldErrors(errorsObj);
         } else {
-          setError(String(data));
+          setError(getErrorMessage(err));
         }
       } else {
-        setError("Network error. Please check your connection.");
+        setError(getErrorMessage(err));
       }
       setIsUploading(false);
     }

@@ -1,0 +1,29 @@
+# Auto detect text files and normalize line endings to LF
+* text=auto
+
+# Web files
+*.js text eol=lf
+*.jsx text eol=lf
+*.json text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Python files
+*.py text eol=lf
+*.txt text eol=lf
+
+# Git-related files
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.sqlite3 binary
+*.db binary

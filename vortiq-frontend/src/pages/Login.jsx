@@ -7,6 +7,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useTheme } from "../context/ThemeContext";
 import VortiqLogo from "../components/VortiqLogo";
+import { getErrorMessage } from "../utils/errorHelper";
 
 const Login = () => {
   const { login, isAuthenticated } = useAuth();
@@ -68,19 +69,7 @@ const Login = () => {
       await login(formData.email, formData.password);
       navigate("/dashboard", { replace: true });
     } catch (err) {
-      const data = err.response?.data;
-      if (data) {
-        if (typeof data === "object" && !Array.isArray(data)) {
-          const messages = Object.values(data).flat().join(" ");
-          setApiError(messages || "Login failed. Please try again.");
-        } else if (Array.isArray(data)) {
-          setApiError(data.join(" "));
-        } else {
-          setApiError(String(data));
-        }
-      } else {
-        setApiError("Network error. Please check your connection.");
-      }
+      setApiError(getErrorMessage(err));
     } finally {
       setIsSubmitting(false);
     }

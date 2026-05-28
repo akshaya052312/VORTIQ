@@ -8,6 +8,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import VortiqLogo from "../components/VortiqLogo";
 import "./Auth.css";
+import { getErrorMessage } from "../utils/errorHelper";
 
 const Register = () => {
   const { register, isAuthenticated } = useAuth();
@@ -71,39 +72,18 @@ const Register = () => {
       await register(formData.email, formData.full_name, formData.password);
       navigate("/dashboard", { replace: true });
     } catch (err) {
+      setApiError(getErrorMessage(err));
       const data = err.response?.data;
-      if (data) {
-        // Handle DRF field-level errors
-        if (typeof data === "object" && !Array.isArray(data)) {
-          const fieldErrors = {};
-          let generalMsg = "";
-
-          for (const [key, value] of Object.entries(data)) {
-            const msg = Array.isArray(value) ? value.join(" ") : String(value);
-            if (key === "email" || key === "password" || key === "full_name") {
-              fieldErrors[key] = msg;
-            } else {
-              generalMsg += msg + " ";
-            }
+      if (data && typeof data === "object" && !Array.isArray(data)) {
+        const fieldErrors = {};
+        for (const [key, value] of Object.entries(data)) {
+          if (key === "email" || key === "password" || key === "full_name") {
+            fieldErrors[key] = Array.isArray(value) ? value.join(" ") : String(value);
           }
-
-          if (Object.keys(fieldErrors).length > 0) {
-            setErrors(fieldErrors);
-          }
-          if (generalMsg.trim()) {
-            setApiError(generalMsg.trim());
-          }
-          if (
-            Object.keys(fieldErrors).length === 0 &&
-            !generalMsg.trim()
-          ) {
-            setApiError("Registration failed. Please try again.");
-          }
-        } else {
-          setApiError(String(data));
         }
-      } else {
-        setApiError("Network error. Please check your connection.");
+        if (Object.keys(fieldErrors).length > 0) {
+          setErrors(fieldErrors);
+        }
       }
     } finally {
       setIsSubmitting(false);
