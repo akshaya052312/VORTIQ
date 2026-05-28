@@ -8,7 +8,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import VortiqLogo from "../components/VortiqLogo";
 import "./Auth.css";
-import { getErrorMessage } from "../utils/errorHelper";
+import { getErrorMessage } from "../utils/errorUtils";
 
 const Register = () => {
   const { register, isAuthenticated } = useAuth();

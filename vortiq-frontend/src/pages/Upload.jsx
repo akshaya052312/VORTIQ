@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { uploadMeeting, getMeetingDetail } from "../api/meetings";
 import "./Upload.css";
-import { getErrorMessage } from "../utils/errorHelper";
+import { getErrorMessage } from "../utils/errorUtils";
 
 const ALLOWED_EXTENSIONS = [".mp3", ".wav", ".m4a"];
 const MAX_FILE_SIZE_MB = 50;
