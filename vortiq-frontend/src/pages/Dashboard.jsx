@@ -20,6 +20,9 @@ const Dashboard = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [viewMode, setViewMode] = useState("grid"); // "grid" or "list"
   const [activeMenuId, setActiveMenuId] = useState(null);
+  
+  // Responsive mobile sidebar state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Close three-dot menu when clicking elsewhere
   useEffect(() => {
@@ -106,6 +109,11 @@ const Dashboard = () => {
   const handleLogout = () => {
     logout();
     navigate("/login");
+  };
+
+  const handleNavClick = (path) => {
+    navigate(path);
+    setIsSidebarOpen(false);
   };
 
   // Calculate stats from full meetings array (not filtered)
@@ -205,6 +213,8 @@ const Dashboard = () => {
           flex-shrink: 0;
           box-sizing: border-box;
           justify-content: space-between;
+          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          z-index: 100;
         }
 
         .sidebar-top {
@@ -755,10 +765,135 @@ const Dashboard = () => {
             opacity: 0.8;
           }
         }
+
+        /* Mobile Responsive Sidebar Drawer & Buttons */
+        .mobile-hamburger-btn {
+          display: none;
+          background: transparent;
+          border: none;
+          color: ${isDarkMode ? 'white' : '#1E1B2E'};
+          cursor: pointer;
+          padding: 8px;
+          align-items: center;
+          justify-content: center;
+          border-radius: 8px;
+          transition: background-color 0.2s;
+          margin-right: 8px;
+        }
+
+        .mobile-hamburger-btn:hover {
+          background: ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'};
+        }
+
+        .new-meeting-top-btn {
+          background: linear-gradient(135deg, #8B5CF6, #7C3AED);
+          border-radius: 12px;
+          padding: 8px 16px;
+          color: white;
+          font-weight: 600;
+          font-size: 13px;
+          border: none;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+          text-decoration: none;
+          transition: all 0.3s ease;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          white-space: nowrap;
+        }
+
+        .new-meeting-top-btn:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
+        }
+
+        .sidebar-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(4px);
+          z-index: 99;
+          animation: fadeIn 0.2s ease forwards;
+        }
+
+        @media (max-width: 768px) {
+          .mobile-hamburger-btn {
+            display: flex;
+          }
+
+          .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translateX(-100%);
+            box-shadow: none;
+          }
+
+          .sidebar.open {
+            transform: translateX(0);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
+          }
+
+          .main-content {
+            padding: 24px 16px;
+          }
+
+          .search-filter-controls {
+            flex-direction: column;
+            align-items: stretch;
+            width: 100%;
+            gap: 12px;
+          }
+
+          .search-input-wrapper,
+          .search-input-custom,
+          .select-custom {
+            width: 100% !important;
+          }
+
+          .view-toggle-buttons {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+          }
+
+          .view-btn {
+            flex: 1;
+          }
+
+          .stats-row-custom {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            width: 100%;
+            -webkit-overflow-scrolling: touch;
+          }
+
+          .stats-row-custom::-webkit-scrollbar {
+            display: none;
+          }
+
+          .stat-chip-custom {
+            flex: 0 0 140px;
+            min-width: 140px;
+          }
+        }
       `}</style>
 
-      {/* Fixed Sidebar */}
-      <aside className="sidebar">
+      {/* Mobile Drawer Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="sidebar-overlay" 
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
+      {/* Responsive Sidebar */}
+      <aside className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
         <div className="sidebar-top">
           <div style={{ marginBottom: "40px", paddingLeft: "12px" }}>
             <VortiqLogo size={36} isDark={true} />
@@ -775,7 +910,7 @@ const Dashboard = () => {
           </div>
 
           <nav className="nav-links-container">
-            <div onClick={() => navigate('/dashboard')} className="nav-link-custom active">
+            <div onClick={() => handleNavClick('/dashboard')} className="nav-link-custom active">
               <svg
                 width="18"
                 height="18"
@@ -794,7 +929,7 @@ const Dashboard = () => {
               <span>Dashboard</span>
             </div>
 
-            <div onClick={() => navigate('/settings')} className="nav-link-custom">
+            <div onClick={() => handleNavClick('/settings')} className="nav-link-custom">
               <svg
                 width="18"
                 height="18"
@@ -837,7 +972,24 @@ const Dashboard = () => {
         
         {/* Top Bar with Search & Filters */}
         <div className="top-bar-custom">
-          <h1 className="page-title-custom">Meetings</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+            {/* Hamburger button on mobile */}
+            <button 
+              className="mobile-hamburger-btn" 
+              onClick={() => setIsSidebarOpen(true)}
+              title="Open Sidebar"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            </button>
+            <h1 className="page-title-custom">Meetings</h1>
+            <Link to="/upload" className="new-meeting-top-btn">
+              + New Meeting
+            </Link>
+          </div>
           
           <div className="search-filter-controls">
             {/* Search Input */}
