@@ -192,28 +192,23 @@ class TranscribeMeetingTestCase(TestCase):
     @patch("transcriptions.ai_tasks.clean_transcript")
     @patch("transcriptions.tasks.groq.Groq")
     @patch("transcriptions.tasks.os.path.getsize")
-    @patch("transcriptions.tasks.AudioSegment.from_file")
+    @patch("transcriptions.tasks.subprocess.run")
+    @patch("transcriptions.tasks.os.listdir")
     @patch("transcriptions.tasks.generate_structured_notes.delay")
-    @patch("transcriptions.tasks.os.path.exists")
-    @patch("transcriptions.tasks.os.remove")
-    def test_transcribe_meeting_over_25mb(self, mock_remove, mock_exists, mock_delay, mock_audio_class, mock_getsize, mock_groq_class, mock_clean):
+    def test_transcribe_meeting_over_25mb(self, mock_delay, mock_listdir, mock_run, mock_getsize, mock_groq_class, mock_clean):
         from transcriptions.tasks import transcribe_meeting
         from unittest.mock import MagicMock, mock_open
         
         mock_getsize.return_value = 30 * 1024 * 1024  # 30MB
-        mock_exists.return_value = True
         mock_clean.return_value = "Transcript Part 1 Transcript Part 2"
         
-        # Mock AudioSegment and chunking
-        mock_audio = MagicMock()
-        mock_audio_class.return_value = mock_audio
-        # mock length to 15 minutes = 15 * 60 * 1000 ms
-        mock_audio.__len__.return_value = 15 * 60 * 1000
+        # Mock subprocess.run returning status code 0
+        mock_result = MagicMock()
+        mock_result.returncode = 0
+        mock_run.return_value = mock_result
         
-        # We need mock slicing: range(0, 15m, 10m) generates 2 slices
-        mock_chunk_1 = MagicMock()
-        mock_chunk_2 = MagicMock()
-        mock_audio.__getitem__.side_effect = [mock_chunk_1, mock_chunk_2]
+        # Mock os.listdir returning mock chunk filenames
+        mock_listdir.return_value = ["chunk_000.mp3", "chunk_001.mp3"]
         
         mock_client = MagicMock()
         mock_groq_class.return_value = mock_client

@@ -9,7 +9,7 @@ import logging
 import os
 import tempfile
 import groq
-from pydub import AudioSegment
+import subprocess
 
 from celery import shared_task
 from django.conf import settings
@@ -68,33 +68,56 @@ def transcribe_meeting(self, meeting_id):
         limit_25mb = 25 * 1024 * 1024
         
         if file_size > limit_25mb:
-            logger.info(f"File size ({file_size} bytes) exceeds 25MB. Splitting into 10-minute chunks using pydub...")
-            audio = AudioSegment.from_file(audio_path)
-            ten_minutes = 10 * 60 * 1000  # 10 minutes in milliseconds
-            chunks = [audio[i:i + ten_minutes] for i in range(0, len(audio), ten_minutes)]
-            logger.info(f"Split audio into {len(chunks)} chunks.")
+            logger.info(f"File size ({file_size} bytes) exceeds 25MB. Splitting into 10-minute chunks using ffmpeg...")
             
+            ext = os.path.splitext(audio_path)[1] or ".wav"
             transcripts = []
-            for idx, chunk in enumerate(chunks):
-                logger.info(f"Processing chunk {idx + 1}/{len(chunks)}")
-                with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp_chunk_file:
-                    tmp_chunk_path = tmp_chunk_file.name
+            
+            with tempfile.TemporaryDirectory() as temp_dir:
+                output_pattern = os.path.join(temp_dir, f"chunk_%03d{ext}")
+                cmd = [
+                    "ffmpeg",
+                    "-y",
+                    "-i",
+                    audio_path,
+                    "-f",
+                    "segment",
+                    "-segment_time",
+                    "600",
+                    "-c",
+                    "copy",
+                    output_pattern
+                ]
                 
-                try:
-                    chunk.export(tmp_chunk_path, format="wav")
-                    with open(tmp_chunk_path, "rb") as f:
+                logger.info(f"Running ffmpeg split command: {' '.join(cmd)}")
+                result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+                if result.returncode != 0:
+                    logger.error(f"ffmpeg split failed with return code {result.returncode}. stderr: {result.stderr}")
+                    raise RuntimeError(f"ffmpeg split failed: {result.stderr}")
+                
+                # List and sort chunk files
+                chunk_filenames = sorted([
+                    f for f in os.listdir(temp_dir)
+                    if f.startswith("chunk_") and f.endswith(ext)
+                ])
+                logger.info(f"ffmpeg split generated {len(chunk_filenames)} chunks: {chunk_filenames}")
+                
+                if not chunk_filenames:
+                    raise RuntimeError("ffmpeg split generated no chunk files.")
+                
+                for idx, chunk_filename in enumerate(chunk_filenames):
+                    chunk_path = os.path.join(temp_dir, chunk_filename)
+                    logger.info(f"Transcribing chunk {idx + 1}/{len(chunk_filenames)}: {chunk_filename}")
+                    
+                    with open(chunk_path, "rb") as f:
                         file_bytes = f.read()
                     
-                    chunk_filename = f"chunk_{idx}.wav"
                     chunk_text = client.audio.transcriptions.create(
                         model="whisper-large-v3",
-                        file=(chunk_filename, file_bytes, "audio/wav"),
+                        file=(chunk_filename, file_bytes, f"audio/{ext.lstrip('.')}" if ext.lower() in [".wav", ".mp3", ".mpeg"] else "audio/wav"),
                         response_format="text"
                     )
                     transcripts.append(chunk_text.strip())
-                finally:
-                    if os.path.exists(tmp_chunk_path):
-                        os.remove(tmp_chunk_path)
             
             raw_text = " ".join(transcripts).strip()
             language = "en"
