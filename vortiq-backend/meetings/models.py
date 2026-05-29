@@ -27,7 +27,7 @@ class Meeting(models.Model):
         related_name="meetings",
     )
     title = models.CharField(max_length=255, blank=True, default="Untitled Meeting")
-    audio_file = models.FileField(upload_to="audio/%Y/%m/%d/", null=True, blank=True)
+    audio_file = models.URLField(max_length=500, null=True, blank=True)
     status = models.CharField(
         max_length=20,
         choices=Status.choices,

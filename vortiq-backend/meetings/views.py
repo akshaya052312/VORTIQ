@@ -46,10 +46,13 @@ class MeetingUploadView(APIView):
         serializer.is_valid(raise_exception=True)
         meeting = serializer.save()
 
-        # Trigger async transcription via Celery if audio_file is provided
+        # Trigger async transcription via threading if audio_file is provided
         if meeting.audio_file:
+            import threading
             from transcriptions.tasks import transcribe_meeting
-            transcribe_meeting.delay(str(meeting.id))
+            t = threading.Thread(target=transcribe_meeting, args=(str(meeting.id),))
+            t.daemon = False
+            t.start()
 
         response_serializer = MeetingResponseSerializer(meeting)
         return Response(
@@ -128,17 +131,9 @@ class MeetingDetailView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        # ── 3. Remove the audio file from disk if it exists ──
-        try:
-            audio_path = meeting.audio_file.path
-            if os.path.exists(audio_path):
-                os.remove(audio_path)
-                logger.info("Deleted audio file: %s", audio_path)
-            else:
-                logger.warning("Audio file not found on disk (already deleted?): %s", audio_path)
-        except Exception as exc:
-            # Log but do not abort — the DB record should still be removed.
-            logger.error("Failed to delete audio file for meeting %s: %s", meeting_id, exc)
+        # ── 3. Bypass local audio file deletion for remote Cloudinary URL ──
+        if meeting.audio_file:
+            logger.info("Audio is stored remotely on Cloudinary, skipping disk cleanup: %s", meeting.audio_file)
 
         # ── 4. Delete the database record (cascades to Transcription & StructuredNotes) ──
         meeting.delete()

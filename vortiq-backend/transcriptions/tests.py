@@ -160,17 +160,22 @@ class TranscribeMeetingTestCase(TestCase):
         self.meeting = Meeting.objects.create(
             user=self.user,
             title="Short Meeting",
-            audio_file="test_audio.mp3",
+            audio_file="https://example.com/test_audio.mp3",
             status=Meeting.Status.PENDING
         )
 
+    @patch("transcriptions.tasks.requests.get")
     @patch("transcriptions.ai_tasks.clean_transcript")
     @patch("transcriptions.tasks.groq.Groq")
     @patch("transcriptions.tasks.os.path.getsize")
-    @patch("transcriptions.tasks.generate_structured_notes.delay")
-    def test_transcribe_meeting_under_25mb(self, mock_delay, mock_getsize, mock_groq_class, mock_clean):
+    @patch("transcriptions.tasks.generate_structured_notes")
+    def test_transcribe_meeting_under_25mb(self, mock_generate, mock_getsize, mock_groq_class, mock_clean, mock_requests_get):
         from transcriptions.tasks import transcribe_meeting
         from unittest.mock import MagicMock, mock_open
+        
+        mock_resp = MagicMock()
+        mock_resp.content = b"dummy bytes"
+        mock_requests_get.return_value = mock_resp
         
         mock_getsize.return_value = 10 * 1024 * 1024  # 10MB
         mock_clean.return_value = "Mocked Groq Transcript"
@@ -187,17 +192,22 @@ class TranscribeMeetingTestCase(TestCase):
         
         transcription = Transcription.objects.get(meeting=self.meeting)
         self.assertEqual(transcription.raw_text, "Mocked Groq Transcript")
-        mock_delay.assert_called_once_with(str(self.meeting.id))
+        mock_generate.assert_called_once_with(str(self.meeting.id))
 
+    @patch("transcriptions.tasks.requests.get")
     @patch("transcriptions.ai_tasks.clean_transcript")
     @patch("transcriptions.tasks.groq.Groq")
     @patch("transcriptions.tasks.os.path.getsize")
     @patch("transcriptions.tasks.subprocess.run")
     @patch("transcriptions.tasks.os.listdir")
-    @patch("transcriptions.tasks.generate_structured_notes.delay")
-    def test_transcribe_meeting_over_25mb(self, mock_delay, mock_listdir, mock_run, mock_getsize, mock_groq_class, mock_clean):
+    @patch("transcriptions.tasks.generate_structured_notes")
+    def test_transcribe_meeting_over_25mb(self, mock_generate, mock_listdir, mock_run, mock_getsize, mock_groq_class, mock_clean, mock_requests_get):
         from transcriptions.tasks import transcribe_meeting
         from unittest.mock import MagicMock, mock_open
+        
+        mock_resp = MagicMock()
+        mock_resp.content = b"dummy bytes"
+        mock_requests_get.return_value = mock_resp
         
         mock_getsize.return_value = 30 * 1024 * 1024  # 30MB
         mock_clean.return_value = "Transcript Part 1 Transcript Part 2"
@@ -219,13 +229,18 @@ class TranscribeMeetingTestCase(TestCase):
             
         transcription = Transcription.objects.get(meeting=self.meeting)
         self.assertEqual(transcription.raw_text, "Transcript Part 1 Transcript Part 2")
-        mock_delay.assert_called_once_with(str(self.meeting.id))
+        mock_generate.assert_called_once_with(str(self.meeting.id))
 
+    @patch("transcriptions.tasks.requests.get")
     @patch("transcriptions.tasks.groq.Groq")
     @patch("transcriptions.tasks.os.path.getsize")
-    def test_transcribe_meeting_failure(self, mock_getsize, mock_groq_class):
+    def test_transcribe_meeting_failure(self, mock_getsize, mock_groq_class, mock_requests_get):
         from transcriptions.tasks import transcribe_meeting
         from unittest.mock import MagicMock, mock_open
+        
+        mock_resp = MagicMock()
+        mock_resp.content = b"dummy bytes"
+        mock_requests_get.return_value = mock_resp
         
         mock_getsize.return_value = 10 * 1024 * 1024
         

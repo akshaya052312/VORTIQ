@@ -37,6 +37,15 @@ class MeetingUploadSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
+        audio_file = validated_data.pop("audio_file", None)
+        if audio_file:
+            import cloudinary.uploader
+            upload_result = cloudinary.uploader.upload(
+                audio_file,
+                resource_type="video"
+            )
+            validated_data["audio_file"] = upload_result.get("secure_url")
+
         validated_data["user"] = self.context["request"].user
         validated_data["status"] = Meeting.Status.PENDING
         return super().create(validated_data)

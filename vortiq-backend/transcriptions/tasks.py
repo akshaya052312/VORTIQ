@@ -1,8 +1,6 @@
 """
-Celery tasks for the transcriptions app.
-
-transcribe_meeting is triggered by the meetings upload endpoint.
-It runs OpenAI Whisper on the uploaded audio and saves the result.
+transcriptions/tasks.py
+Plain Python tasks for transcription and structured notes generation (runs in a daemon thread).
 """
 
 import logging
@@ -10,25 +8,22 @@ import os
 import tempfile
 import groq
 import subprocess
-
-from celery import shared_task
+import requests
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
-
-@shared_task(bind=True, name="transcriptions.transcribe_meeting")
-def transcribe_meeting(self, meeting_id):
+def transcribe_meeting(meeting_id):
     """
     Transcribe the audio file for a given meeting using OpenAI Whisper.
 
     Pipeline:
       1. Fetch Meeting record
       2. Set status → processing
-      3. Load audio file path
-      4. Run Whisper (base model)
+      3. Download audio file from Cloudinary URL to temp file
+      4. Run Whisper (via Groq Whisper API)
       5. Save Transcription record (raw_text + language)
-      6. Set Meeting status → completed
+      6. Clean the transcript with AI and run generate_structured_notes
 
     On failure: set Meeting status → failed and log the error.
 
@@ -40,6 +35,7 @@ def transcribe_meeting(self, meeting_id):
     from transcriptions.ai_tasks import clean_transcript
 
     meeting = None
+    audio_path = None
 
     try:
         # ── 1. Fetch the Meeting ──
@@ -54,9 +50,25 @@ def transcribe_meeting(self, meeting_id):
         meeting.save(update_fields=["status", "updated_at"])
         logger.info(f"Meeting '{meeting.title}' ({meeting_id}) → processing")
 
-        # ── 3. Get the audio file path ──
-        audio_path = meeting.audio_file.path
-        logger.info(f"Audio file path: {audio_path}")
+        # ── 3. Download audio from Cloudinary URL ──
+        import requests
+        import tempfile
+
+        audio_url = meeting.audio_file
+        ext = audio_url.split("?")[0].split(".")[-1]
+        if ext not in ["mp3", "wav", "m4a"]:
+            ext = "wav"
+
+        logger.info(f"Downloading audio from: {audio_url}")
+        response = requests.get(audio_url, timeout=60)
+        response.raise_for_status()
+
+        tmp = tempfile.NamedTemporaryFile(suffix=f".{ext}", delete=False)
+        tmp.write(response.content)
+        tmp.flush()
+        tmp.close()
+        audio_path = tmp.name
+        logger.info(f"Audio downloaded to temp file: {audio_path}")
 
         # ── 4. Run Groq Whisper API transcription ──
         logger.info(f"Transcribing via Groq: {audio_path}")
@@ -69,8 +81,6 @@ def transcribe_meeting(self, meeting_id):
         
         if file_size > limit_25mb:
             logger.info(f"File size ({file_size} bytes) exceeds 25MB. Splitting into 10-minute chunks using ffmpeg...")
-            
-            ext = os.path.splitext(audio_path)[1] or ".wav"
             transcripts = []
             
             with tempfile.TemporaryDirectory() as temp_dir:
@@ -106,10 +116,10 @@ def transcribe_meeting(self, meeting_id):
                     raise RuntimeError("ffmpeg split generated no chunk files.")
                 
                 for idx, chunk_filename in enumerate(chunk_filenames):
-                    chunk_path = os.path.join(temp_dir, chunk_filename)
+                    chunk_path_segment = os.path.join(temp_dir, chunk_filename)
                     logger.info(f"Transcribing chunk {idx + 1}/{len(chunk_filenames)}: {chunk_filename}")
                     
-                    with open(chunk_path, "rb") as f:
+                    with open(chunk_path_segment, "rb") as f:
                         file_bytes = f.read()
                     
                     chunk_text = client.audio.transcriptions.create(
@@ -129,7 +139,7 @@ def transcribe_meeting(self, meeting_id):
             
             raw_text = client.audio.transcriptions.create(
                 model="whisper-large-v3",
-                file=(filename, file_bytes, "audio/wav"),
+                file=(filename, file_bytes, f"audio/{ext.lstrip('.')}" if ext.lower() in [".wav", ".mp3", ".mpeg"] else "audio/wav"),
                 response_format="text"
             ).strip()
             language = "en"
@@ -177,9 +187,15 @@ def transcribe_meeting(self, meeting_id):
             logger.info(f"Meeting {meeting_id} marked completed (audio unclear).")
             return
 
-        # ── 7. Automatically chain and trigger generate_structured_notes ──
-        logger.info(f"Chaining generate_structured_notes task for meeting {meeting_id}")
-        generate_structured_notes.delay(meeting_id)
+        # cleanup temp file
+        try:
+            os.remove(audio_path)
+        except Exception:
+            pass
+
+        # ── 7. Automatically trigger generate_structured_notes synchronously ──
+        logger.info(f"Triggering generate_structured_notes task for meeting {meeting_id}")
+        generate_structured_notes(meeting_id)
 
     except Exception as exc:
         # ── Failure handler ──
@@ -189,13 +205,18 @@ def transcribe_meeting(self, meeting_id):
         if meeting is not None:
             meeting.status = Meeting.Status.FAILED
             meeting.save(update_fields=["status", "updated_at"])
-
-        # Re-raise so Celery marks the task as FAILURE
         raise
 
+    finally:
+        # Clean up downloaded temp file
+        if audio_path and os.path.exists(audio_path):
+            try:
+                os.remove(audio_path)
+            except Exception as e:
+                logger.error(f"Failed to remove temp file {audio_path}: {e}")
 
-@shared_task(bind=True, name="transcriptions.generate_structured_notes")
-def generate_structured_notes(self, meeting_id):
+
+def generate_structured_notes(meeting_id):
     """
     Generate AI structured notes (summary, action items, speaker turns, decisions)
     for a transcribed meeting using Gemini.
@@ -286,7 +307,6 @@ def generate_structured_notes(self, meeting_id):
             )
             meeting.status = Meeting.Status.COMPLETED
             meeting.save(update_fields=["status", "updated_at"])
-
 
         logger.info(f"generate_structured_notes completed successfully for meeting {meeting_id}")
 
