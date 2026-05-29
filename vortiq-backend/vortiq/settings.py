@@ -6,8 +6,19 @@ Copy .env.example to .env and fill in your values before running.
 """
 
 import os
+import sys
 from pathlib import Path
 from datetime import timedelta
+
+# Mock fcntl on Windows for django-crontab compatibility
+if sys.platform == 'win32':
+    import types
+    mock_fcntl = types.ModuleType('fcntl')
+    mock_fcntl.fcntl = lambda fd, op, arg=0: 0
+    mock_fcntl.ioctl = lambda fd, op, arg=0, mutate_flag=False: 0
+    mock_fcntl.flock = lambda fd, op: 0
+    mock_fcntl.lockf = lambda fd, op, length=0, start=0, whence=0: 0
+    sys.modules['fcntl'] = mock_fcntl
 
 from dotenv import load_dotenv
 
@@ -53,6 +64,12 @@ INSTALLED_APPS = [
     "meetings.apps.MeetingsConfig",
     "transcriptions.apps.TranscriptionsConfig",
     "social_django",
+    "django_crontab",
+]
+
+CRONJOBS = [
+    ('*/5 * * * *', 'vortiq.cron.keep_alive', '>> /tmp/vortiq_cron.log 2>&1'),
+    ('0 2 * * *', 'vortiq.cron.cleanup_failed_meetings', '>> /tmp/vortiq_cron.log 2>&1'),
 ]
 
 # ──────────────────────────────────────────────
@@ -114,11 +131,14 @@ ASGI_APPLICATION = "vortiq.asgi.application"
 import dj_database_url
 import os
 
+db_url = os.environ.get('DATABASE_URL', '')
+is_postgres = db_url.startswith('postgres') or db_url.startswith('postgresql')
+
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('DATABASE_URL'),
+        default=db_url,
         conn_max_age=600,
-        ssl_require=True,
+        ssl_require=is_postgres,
     )
 }
 

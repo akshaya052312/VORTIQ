@@ -146,3 +146,101 @@ class StructuredNotesTestCase(TestCase):
         # Check meeting status set to failed
         self.meeting.refresh_from_db()
         self.assertEqual(self.meeting.status, Meeting.Status.FAILED)
+
+
+class TranscribeMeetingTestCase(TestCase):
+    def setUp(self):
+        from django.contrib.auth import get_user_model
+        User = get_user_model()
+        self.user = User.objects.create_user(
+            email="testuser@example.com",
+            password="testpassword123",
+            full_name="Test User"
+        )
+        self.meeting = Meeting.objects.create(
+            user=self.user,
+            title="Short Meeting",
+            audio_file="test_audio.mp3",
+            status=Meeting.Status.PENDING
+        )
+
+    @patch("transcriptions.ai_tasks.clean_transcript")
+    @patch("transcriptions.tasks.groq.Groq")
+    @patch("transcriptions.tasks.os.path.getsize")
+    @patch("transcriptions.tasks.generate_structured_notes.delay")
+    def test_transcribe_meeting_under_25mb(self, mock_delay, mock_getsize, mock_groq_class, mock_clean):
+        from transcriptions.tasks import transcribe_meeting
+        from unittest.mock import MagicMock, mock_open
+        
+        mock_getsize.return_value = 10 * 1024 * 1024  # 10MB
+        mock_clean.return_value = "Mocked Groq Transcript"
+        
+        mock_client = MagicMock()
+        mock_groq_class.return_value = mock_client
+        mock_client.audio.transcriptions.create.return_value = "Mocked Groq Transcript"
+        
+        with patch("builtins.open", mock_open(read_data=b"dummy bytes")):
+            transcribe_meeting(str(self.meeting.id))
+            
+        self.meeting.refresh_from_db()
+        self.assertEqual(self.meeting.status, Meeting.Status.PROCESSING)
+        
+        transcription = Transcription.objects.get(meeting=self.meeting)
+        self.assertEqual(transcription.raw_text, "Mocked Groq Transcript")
+        mock_delay.assert_called_once_with(str(self.meeting.id))
+
+    @patch("transcriptions.ai_tasks.clean_transcript")
+    @patch("transcriptions.tasks.groq.Groq")
+    @patch("transcriptions.tasks.os.path.getsize")
+    @patch("transcriptions.tasks.AudioSegment.from_file")
+    @patch("transcriptions.tasks.generate_structured_notes.delay")
+    @patch("transcriptions.tasks.os.path.exists")
+    @patch("transcriptions.tasks.os.remove")
+    def test_transcribe_meeting_over_25mb(self, mock_remove, mock_exists, mock_delay, mock_audio_class, mock_getsize, mock_groq_class, mock_clean):
+        from transcriptions.tasks import transcribe_meeting
+        from unittest.mock import MagicMock, mock_open
+        
+        mock_getsize.return_value = 30 * 1024 * 1024  # 30MB
+        mock_exists.return_value = True
+        mock_clean.return_value = "Transcript Part 1 Transcript Part 2"
+        
+        # Mock AudioSegment and chunking
+        mock_audio = MagicMock()
+        mock_audio_class.return_value = mock_audio
+        # mock length to 15 minutes = 15 * 60 * 1000 ms
+        mock_audio.__len__.return_value = 15 * 60 * 1000
+        
+        # We need mock slicing: range(0, 15m, 10m) generates 2 slices
+        mock_chunk_1 = MagicMock()
+        mock_chunk_2 = MagicMock()
+        mock_audio.__getitem__.side_effect = [mock_chunk_1, mock_chunk_2]
+        
+        mock_client = MagicMock()
+        mock_groq_class.return_value = mock_client
+        mock_client.audio.transcriptions.create.side_effect = ["Transcript Part 1", "Transcript Part 2"]
+        
+        with patch("builtins.open", mock_open(read_data=b"dummy bytes")):
+            transcribe_meeting(str(self.meeting.id))
+            
+        transcription = Transcription.objects.get(meeting=self.meeting)
+        self.assertEqual(transcription.raw_text, "Transcript Part 1 Transcript Part 2")
+        mock_delay.assert_called_once_with(str(self.meeting.id))
+
+    @patch("transcriptions.tasks.groq.Groq")
+    @patch("transcriptions.tasks.os.path.getsize")
+    def test_transcribe_meeting_failure(self, mock_getsize, mock_groq_class):
+        from transcriptions.tasks import transcribe_meeting
+        from unittest.mock import MagicMock, mock_open
+        
+        mock_getsize.return_value = 10 * 1024 * 1024
+        
+        mock_client = MagicMock()
+        mock_groq_class.return_value = mock_client
+        mock_client.audio.transcriptions.create.side_effect = Exception("Groq API error")
+        
+        with patch("builtins.open", mock_open(read_data=b"dummy bytes")):
+            with self.assertRaises(Exception):
+                transcribe_meeting(str(self.meeting.id))
+                
+        self.meeting.refresh_from_db()
+        self.assertEqual(self.meeting.status, Meeting.Status.FAILED)

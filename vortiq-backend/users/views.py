@@ -93,3 +93,14 @@ class GoogleAuthTokenView(APIView):
         else:
             return redirect(f"{frontend_url}/login?error=auth_failed")
 
+
+class HealthCheckView(APIView):
+    """
+    GET /api/auth/health/
+    Simple health check endpoint returning status ok.
+    """
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        return Response({"status": "ok"}, status=status.HTTP_200_OK)
+
