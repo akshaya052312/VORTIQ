@@ -2,14 +2,12 @@ import os
 from django.shortcuts import redirect
 from rest_framework_simplejwt.tokens import RefreshToken
 
-def set_full_name(backend, user, response, *args, **kwargs):
-    if user and not user.full_name:
-        given_name = response.get('given_name', '')
-        family_name = response.get('family_name', '')
-        if not given_name and not family_name:
-            user.full_name = user.email
-        else:
-            user.full_name = f"{given_name} {family_name}".strip()
+def save_full_name(backend, user, response, *args, **kwargs):
+    if user and (not user.full_name or user.full_name == user.email.split('@')[0]):
+        full_name = response.get('name') or \
+                    f"{response.get('given_name', '')} {response.get('family_name', '')}".strip() or \
+                    user.email.split('@')[0]
+        user.full_name = full_name
         user.save()
 
 def generate_jwt_and_redirect(backend, user, *args, **kwargs):
