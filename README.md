@@ -106,4 +106,3 @@ The following environment variables are supported by Vortiq. Please define them 
 - **`GROQ_API_KEY`**: `GROQ_API_KEY=your-groq-api-key-here`
   - API key used to access Groq cloud inference engine models.
 
-Integrations (Slack, Notion, Google Calendar) — coming soon
