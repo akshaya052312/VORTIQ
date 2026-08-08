@@ -293,12 +293,27 @@ GOOGLE_REDIRECT_URI = os.getenv("GOOGLE_REDIRECT_URI", "")
 # Google OAuth2 settings (social-auth-app-django)
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY", "")
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.getenv("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET", "")
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = ["email", "profile"]
+# Updated scopes to include Calendar, Gmail compose, and Drive file access.
+# Existing scopes are retained to ensure backward compatibility for login.
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    "email",
+    "profile",
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/gmail.compose",
+    "https://www.googleapis.com/auth/drive.file",
+]
 SOCIAL_AUTH_GOOGLE_OAUTH2_IGNORE_DEFAULT_SCOPE = False
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/api/auth/google/token/'
 SOCIAL_AUTH_USER_MODEL = "users.CustomUser"
 SOCIAL_AUTH_USER_FIELDS = ["email", "full_name"]
 SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL = True
+
+# Ensure we request offline access and force consent screen so refresh tokens are issued.
+# This is done via extra arguments passed to the OAuth2 authorization endpoint.
+SOCIAL_AUTH_GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {
+    "access_type": "offline",
+    "prompt": "consent",
+}
 
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',

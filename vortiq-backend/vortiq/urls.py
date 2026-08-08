@@ -17,6 +17,7 @@ urlpatterns = [
     path("api/auth/health/", HealthCheckView.as_view(), name="health-check"),
     path("api/meetings/", include("meetings.urls")),
     path("api/transcriptions/", include("transcriptions.urls")),
+    path("api/integrations/", include("integrations.urls")),
 ]
 
 # Serve media files in development
