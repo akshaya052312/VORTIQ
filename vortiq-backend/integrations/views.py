@@ -268,7 +268,11 @@ class GoogleConnectView(APIView):
 
         flow = Flow.from_client_config(
             client_config,
-            scopes=['https://www.googleapis.com/auth/calendar.events']
+            scopes=[
+                'https://www.googleapis.com/auth/calendar.events',
+                'https://www.googleapis.com/auth/gmail.compose',
+                'https://www.googleapis.com/auth/drive.file',
+            ]
         )
         flow.redirect_uri = settings.GOOGLE_REDIRECT_URI
 
@@ -318,7 +322,11 @@ class GoogleCallbackView(APIView):
 
         flow = Flow.from_client_config(
             client_config,
-            scopes=['https://www.googleapis.com/auth/calendar.events'],
+            scopes=[
+                'https://www.googleapis.com/auth/calendar.events',
+                'https://www.googleapis.com/auth/gmail.compose',
+                'https://www.googleapis.com/auth/drive.file',
+            ],
             state=state
         )
         flow.redirect_uri = settings.GOOGLE_REDIRECT_URI
