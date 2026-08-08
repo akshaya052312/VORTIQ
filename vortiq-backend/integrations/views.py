@@ -303,11 +303,12 @@ class GoogleCallbackView(APIView):
             return redirect(f"{settings.FRONTEND_URL}/integrations?error=oauth_failed")
 
         try:
-            flow.fetch_token(code=code)
-            credentials = flow.credentials
+            state_data = signing.loads(state, max_age=3600)
+            user_id = state_data.get('user_id')
+            user = User.objects.get(id=user_id)
         except Exception as e:
-            logger.error(f"Google token exchange failed: {e}", exc_info=True)
-            return redirect(f"{settings.FRONTEND_URL}/integrations?error=token_exchange_failed")
+            logger.error(f"Invalid state in Google callback: {e}", exc_info=True)
+            return redirect(f"{settings.FRONTEND_URL}/integrations?error=invalid_state")
 
         client_config = {
             "web": {
@@ -336,6 +337,7 @@ class GoogleCallbackView(APIView):
             flow.fetch_token(code=code)
             credentials = flow.credentials
         except Exception as e:
+            logger.error(f"Google token exchange failed: {e}", exc_info=True)
             return redirect(f"{settings.FRONTEND_URL}/integrations?error=token_exchange_failed")
 
         access_token = credentials.token
@@ -349,22 +351,22 @@ class GoogleCallbackView(APIView):
             "expiry": expiry,
         }
 
-        # Update or create the UserIntegration
         UserIntegration.objects.update_or_create(
             user=user,
             integration_type='google_calendar',
             defaults={
                 "access_token": access_token,
                 "refresh_token": refresh_token,
-                "workspace_or_channel": user.email, # Primary calendar identifier is usually user's email
+                "workspace_or_channel": user.email,
                 "extra_data": extra_data,
                 "is_active": True,
             }
         )
 
+        logger.info(f"Google integration saved successfully for user {user.email}")
+
         return redirect(f"{settings.FRONTEND_URL}/integrations?connected=google")
-
-
+    
 class IntegrationDisconnectView(APIView):
     """
     Disconnect endpoint. Sets is_active=False for the given integration_type.
