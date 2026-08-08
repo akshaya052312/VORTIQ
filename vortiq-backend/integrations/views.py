@@ -1,6 +1,7 @@
 import urllib.parse
 import requests
 import base64
+import secrets
 import logging
 from django.shortcuts import redirect
 from django.conf import settings
@@ -17,6 +18,8 @@ from .serializers import UserIntegrationSerializer
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
+
+
 class UserIntegrationListView(generics.ListAPIView):
     """
     List view to fetch all integrations connected by the authenticated user.
@@ -33,7 +36,7 @@ class SlackConnectView(APIView):
     Redirects the user to Slack's OAuth authorization URL.
     Uses the token query parameter for authentication.
     """
-    permission_classes = [] # Allowed unauthenticated because token is passed in query params
+    permission_classes = []  # Allowed unauthenticated because token is passed in query params
 
     def get(self, request):
         token_str = request.GET.get('token')
@@ -79,7 +82,7 @@ class SlackCallbackView(APIView):
 
         # Verify state to obtain user_id
         try:
-            state_data = signing.loads(state, max_age=3600) # Expiry: 1 hour
+            state_data = signing.loads(state, max_age=3600)  # Expiry: 1 hour
             user_id = state_data.get('user_id')
             user = User.objects.get(id=user_id)
         except Exception as e:
@@ -127,7 +130,7 @@ class SlackCallbackView(APIView):
             integration_type='slack',
             defaults={
                 "access_token": access_token,
-                "workspace_or_channel": team_name, # Saves the team name
+                "workspace_or_channel": team_name,  # Saves the team name
                 "extra_data": extra_data,
                 "is_active": True,
             }
@@ -194,7 +197,7 @@ class NotionCallbackView(APIView):
         token_url = "https://api.notion.com/v1/oauth/token"
         auth_str = f"{settings.NOTION_CLIENT_ID}:{settings.NOTION_CLIENT_SECRET}"
         auth_b64 = base64.b64encode(auth_str.encode()).decode()
-        
+
         headers = {
             "Authorization": f"Basic {auth_b64}",
             "Content-Type": "application/json"
@@ -224,7 +227,7 @@ class NotionCallbackView(APIView):
             integration_type='notion',
             defaults={
                 "access_token": access_token,
-                "workspace_or_channel": workspace_id, # Saves the workspace_id
+                "workspace_or_channel": workspace_id,  # Saves the workspace_id
                 "extra_data": resp_data,
                 "is_active": True,
             }
@@ -237,6 +240,14 @@ class GoogleConnectView(APIView):
     """
     Redirects the user to Google's OAuth authorization URL.
     Uses the token query parameter for authentication.
+
+    NOTE ON PKCE: google-auth-oauthlib's Flow object generates a PKCE
+    code_verifier internally, but that Flow instance only lives for the
+    duration of this single request. Since GoogleCallbackView is a
+    completely separate request, it can't see that verifier unless we
+    carry it across ourselves. We generate our own verifier here, assign
+    it to the flow, and smuggle it through the signed `state` parameter
+    so GoogleCallbackView can reconstruct the exact same flow later.
     """
     permission_classes = []
 
@@ -251,9 +262,6 @@ class GoogleConnectView(APIView):
             user = User.objects.get(id=user_id)
         except Exception as e:
             return Response({"error": f"Invalid or expired token: {str(e)}"}, status=401)
-
-        # Securely sign the user ID into the state parameter
-        state = signing.dumps({"user_id": str(user.id)})
 
         client_config = {
             "web": {
@@ -276,6 +284,18 @@ class GoogleConnectView(APIView):
             ]
         )
         flow.redirect_uri = settings.GOOGLE_REDIRECT_URI
+
+        # Generate our own PKCE verifier and carry it through `state`,
+        # since the Flow object itself doesn't persist across the
+        # separate connect/callback requests.
+        code_verifier = secrets.token_urlsafe(64)
+        flow.code_verifier = code_verifier
+
+        # Securely sign the user ID AND the code_verifier into state
+        state = signing.dumps({
+            "user_id": str(user.id),
+            "code_verifier": code_verifier,
+        })
 
         # Force consent screen to guarantee refresh token is returned on every login
         authorization_url, _ = flow.authorization_url(
@@ -305,6 +325,7 @@ class GoogleCallbackView(APIView):
         try:
             state_data = signing.loads(state, max_age=3600)
             user_id = state_data.get('user_id')
+            code_verifier = state_data.get('code_verifier')
             user = User.objects.get(id=user_id)
         except Exception as e:
             logger.error(f"Invalid state in Google callback: {e}", exc_info=True)
@@ -332,6 +353,7 @@ class GoogleCallbackView(APIView):
             state=state
         )
         flow.redirect_uri = settings.GOOGLE_REDIRECT_URI
+        flow.code_verifier = code_verifier  # Restore the same verifier used at /connect/
 
         try:
             flow.fetch_token(code=code)
@@ -351,13 +373,14 @@ class GoogleCallbackView(APIView):
             "expiry": expiry,
         }
 
+        # Update or create the UserIntegration
         UserIntegration.objects.update_or_create(
             user=user,
             integration_type='google_calendar',
             defaults={
                 "access_token": access_token,
                 "refresh_token": refresh_token,
-                "workspace_or_channel": user.email,
+                "workspace_or_channel": user.email,  # Primary calendar identifier is usually user's email
                 "extra_data": extra_data,
                 "is_active": True,
             }
@@ -366,7 +389,8 @@ class GoogleCallbackView(APIView):
         logger.info(f"Google integration saved successfully for user {user.email}")
 
         return redirect(f"{settings.FRONTEND_URL}/integrations?connected=google")
-    
+
+
 class IntegrationDisconnectView(APIView):
     """
     Disconnect endpoint. Sets is_active=False for the given integration_type.
