@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     "users.apps.UsersConfig",
     "meetings.apps.MeetingsConfig",
     "transcriptions.apps.TranscriptionsConfig",
+    "integrations",
     "social_django",
     "django_crontab",
 ]
