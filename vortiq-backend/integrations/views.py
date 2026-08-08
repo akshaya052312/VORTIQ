@@ -1,6 +1,7 @@
 import urllib.parse
 import requests
 import base64
+import logging
 from django.shortcuts import redirect
 from django.conf import settings
 from django.core import signing
@@ -15,7 +16,7 @@ from .models import UserIntegration
 from .serializers import UserIntegrationSerializer
 
 User = get_user_model()
-
+logger = logging.getLogger(__name__)
 class UserIntegrationListView(generics.ListAPIView):
     """
     List view to fetch all integrations connected by the authenticated user.
@@ -302,11 +303,11 @@ class GoogleCallbackView(APIView):
             return redirect(f"{settings.FRONTEND_URL}/integrations?error=oauth_failed")
 
         try:
-            state_data = signing.loads(state, max_age=3600)
-            user_id = state_data.get('user_id')
-            user = User.objects.get(id=user_id)
+            flow.fetch_token(code=code)
+            credentials = flow.credentials
         except Exception as e:
-            return redirect(f"{settings.FRONTEND_URL}/integrations?error=invalid_state")
+            logger.error(f"Google token exchange failed: {e}", exc_info=True)
+            return redirect(f"{settings.FRONTEND_URL}/integrations?error=token_exchange_failed")
 
         client_config = {
             "web": {
