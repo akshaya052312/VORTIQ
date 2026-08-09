@@ -3,6 +3,8 @@ import requests
 import base64
 import secrets
 import logging
+import os
+os.environ['OAUTHLIB_RELAX_TOKEN_SCOPE'] = '1'
 from django.shortcuts import redirect
 from django.conf import settings
 from django.core import signing
@@ -15,7 +17,6 @@ from rest_framework_simplejwt.tokens import AccessToken
 from django.contrib.auth import get_user_model
 from .models import UserIntegration
 from .serializers import UserIntegrationSerializer
-
 User = get_user_model()
 logger = logging.getLogger(__name__)
 
