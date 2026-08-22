@@ -9,6 +9,7 @@ import os
 import sys
 from pathlib import Path
 from datetime import timedelta
+from rest_framework.views import APIView
 
 # Mock fcntl on Windows for django-crontab compatibility
 if sys.platform == 'win32':
