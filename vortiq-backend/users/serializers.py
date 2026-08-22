@@ -1,86 +1,31 @@
-"""
-Serializers for user registration and login.
-"""
-
-from django.contrib.auth import authenticate
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+from django.contrib.auth import get_user_model
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from rest_framework import serializers
-from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import CustomUser
-
-
-class RegisterSerializer(serializers.ModelSerializer):
-    """
-    Handles user registration.
-    Accepts email, full_name, password — hashes the password,
-    creates the user, and returns a JWT token pair.
-    """
-
-    password = serializers.CharField(
-        write_only=True,
-        min_length=8,
-        style={"input_type": "password"},
-    )
-
-    class Meta:
-        model = CustomUser
-        fields = ("email", "full_name", "password")
-
-    def create(self, validated_data):
-        user = CustomUser.objects.create_user(
-            email=validated_data["email"],
-            password=validated_data["password"],
-            full_name=validated_data.get("full_name", ""),
-        )
-        return user
-
-    def to_representation(self, instance):
-        """Return user info + JWT token pair on successful registration."""
-        refresh = RefreshToken.for_user(instance)
-        return {
-            "user": {
-                "id": instance.id,
-                "email": instance.email,
-                "full_name": instance.full_name,
-            },
-            "tokens": {
-                "refresh": str(refresh),
-                "access": str(refresh.access_token),
-            },
-        }
+User = get_user_model()
+token_generator = PasswordResetTokenGenerator()
 
 
-class LoginSerializer(serializers.Serializer):
-    """
-    Validates email + password credentials and returns
-    a JWT access/refresh token pair.
-    """
-
+class PasswordResetRequestSerializer(serializers.Serializer):
     email = serializers.EmailField()
-    password = serializers.CharField(
-        write_only=True,
-        style={"input_type": "password"},
-    )
 
-    def validate(self, attrs):
-        email = attrs.get("email")
-        password = attrs.get("password")
 
-        user = authenticate(
-            request=self.context.get("request"),
-            email=email,
-            password=password,
-        )
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    uid = serializers.CharField()
+    token = serializers.CharField()
+    new_password = serializers.CharField(min_length=8, write_only=True)
 
-        if user is None:
-            raise serializers.ValidationError(
-                "Invalid email or password."
-            )
+    def validate(self, data):
+        try:
+            uid = force_str(urlsafe_base64_decode(data["uid"]))
+            user = User.objects.get(pk=uid)
+        except (User.DoesNotExist, ValueError, TypeError, OverflowError):
+            raise serializers.ValidationError("Invalid reset link.")
 
-        if not user.is_active:
-            raise serializers.ValidationError(
-                "This account has been deactivated."
-            )
+        if not token_generator.check_token(user, data["token"]):
+            raise serializers.ValidationError("This reset link is invalid or has expired.")
 
-        attrs["user"] = user
-        return attrs
+        data["user"] = user
+        return data
