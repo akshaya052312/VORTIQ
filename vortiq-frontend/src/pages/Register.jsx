@@ -6,12 +6,14 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { useTheme } from "../context/ThemeContext";
 import VortiqLogo from "../components/VortiqLogo";
 import "./Auth.css";
 import { getErrorMessage } from "../utils/errorUtils";
 
 const Register = () => {
   const { register, isAuthenticated } = useAuth();
+  const { isDarkMode } = useTheme();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -96,7 +98,7 @@ const Register = () => {
         <div className="auth-glow" />
 
         <div className="auth-header">
-          <VortiqLogo size={44} isDark={true} />
+          <VortiqLogo size={44} isDark={isDarkMode} />
           <p className="auth-subtitle">Create your account</p>
         </div>
 

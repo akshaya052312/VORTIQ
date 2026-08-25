@@ -453,14 +453,14 @@ const MeetingDetail = () => {
                       <section style={{
                         marginTop: "2rem",
                         padding: "1.5rem",
-                        backgroundColor: isDarkMode ? "rgba(255, 255, 255, 0.02)" : "rgba(139, 92, 246, 0.05)",
-                        border: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.05)" : "rgba(139, 92, 246, 0.1)"}`,
+                        backgroundColor: isDarkMode ? "rgba(255, 255, 255, 0.02)" : "#FFFFFF",
+                        border: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.05)" : "#E5E7EB"}`,
                         borderRadius: "12px",
                       }}>
                         <h2 style={{
                           fontSize: "1.2rem",
                           fontWeight: "600",
-                          color: isDarkMode ? "#f4f4f5" : "#1E1B2E",
+                          color: isDarkMode ? "#f4f4f5" : "#111111",
                           marginBottom: "1rem",
                           letterSpacing: "-0.01em",
                         }}>
@@ -483,8 +483,8 @@ const MeetingDetail = () => {
                                 justifyItem: "center",
                                 justifyContent: "space-between",
                                 padding: "0.75rem 1rem",
-                                backgroundColor: isDarkMode ? "rgba(255, 255, 255, 0.01)" : "rgba(139, 92, 246, 0.03)",
-                                border: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.03)" : "rgba(139, 92, 246, 0.08)"}`,
+                                backgroundColor: isDarkMode ? "rgba(255, 255, 255, 0.01)" : "#F9FAFB",
+                                border: `1px solid ${isDarkMode ? "rgba(255, 255, 255, 0.03)" : "#E5E7EB"}`,
                                 borderRadius: "8px",
                               }}>
                                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>

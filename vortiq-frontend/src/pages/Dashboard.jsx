@@ -24,6 +24,17 @@ const Dashboard = () => {
   // Responsive mobile sidebar state
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  // Desktop sidebar collapse / expand state
+  const [isCollapsed, setIsCollapsed] = useState(() => localStorage.getItem("sidebar_collapsed") === "true");
+
+  const toggleCollapse = () => {
+    setIsCollapsed((prev) => {
+      const next = !prev;
+      localStorage.setItem("sidebar_collapsed", String(next));
+      return next;
+    });
+  };
+
   // Close three-dot menu when clicking elsewhere
   useEffect(() => {
     const handleOutsideClick = () => setActiveMenuId(null);
@@ -188,79 +199,118 @@ const Dashboard = () => {
           min-height: 100vh;
           width: 100vw;
           margin: 0;
-          padding: 0;
+          padding: 16px;
           overflow: hidden;
           font-family: 'Inter', sans-serif;
-          background: ${isDarkMode 
-            ? 'radial-gradient(circle at top left, rgba(168,85,247,0.15), transparent 28%), radial-gradient(circle at bottom right, rgba(236,72,153,0.10), transparent 28%), #0B0715'
-            : 'linear-gradient(180deg, #FAF8FF, #F3EEFF)'};
+          background: ${isDarkMode ? '#0F0F0F' : '#F5F6F8'};
           position: fixed;
           top: 0;
           left: 0;
           box-sizing: border-box;
+          gap: 16px;
         }
 
         .sidebar {
-          width: 260px;
-          min-height: 100vh;
-          background: ${isDarkMode ? 'rgba(15, 15, 20, 0.80)' : 'rgba(255,255,255,0.85)'};
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border-right: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.06)' : '#ECE8F5'};
+          width: ${isCollapsed ? '76px' : '270px'};
+          min-width: ${isCollapsed ? '76px' : '270px'};
+          height: calc(100vh - 32px);
+          background: ${isDarkMode ? '#F5F5F5' : '#1A1A1A'};
+          border-radius: 18px;
           display: flex;
           flex-direction: column;
-          padding: 32px 16px;
+          padding: ${isCollapsed ? '24px 12px' : '28px 20px'};
           flex-shrink: 0;
           box-sizing: border-box;
           justify-content: space-between;
-          transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.25s cubic-bezier(0.4, 0, 0.2, 1), padding 0.25s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           z-index: 100;
+          box-shadow: ${isDarkMode ? '0 2px 12px rgba(0,0,0,0.15)' : '0 2px 16px rgba(0,0,0,0.18)'};
+          overflow-y: auto;
+          overflow-x: hidden;
+        }
+
+        /* Sidebar scrollbar */
+        .sidebar::-webkit-scrollbar {
+          width: 5px;
+        }
+        .sidebar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .sidebar::-webkit-scrollbar-thumb {
+          background: ${isDarkMode ? 'rgba(0,0,0,0.18)' : 'rgba(255,255,255,0.18)'};
+          border-radius: 999px;
+        }
+        .sidebar::-webkit-scrollbar-thumb:hover {
+          background: ${isDarkMode ? 'rgba(0,0,0,0.30)' : 'rgba(255,255,255,0.30)'};
         }
 
         .sidebar-top {
           display: flex;
           flex-direction: column;
+          flex: 1;
         }
 
-        .sidebar-logo {
-          font-size: 22px;
-          font-weight: 800;
-          color: ${isDarkMode ? '#C084FC' : '#7C3AED'};
-          letter-spacing: -0.5px;
-          padding: 0 12px;
-          margin-bottom: 40px;
+        .sidebar-header-row {
+          display: flex;
+          align-items: center;
+          justify-content: ${isCollapsed ? 'center' : 'space-between'};
+          margin-bottom: 28px;
+          padding: 0 ${isCollapsed ? '0' : '4px'};
+        }
+
+        .sidebar-toggle-btn {
+          width: 30px;
+          height: 30px;
+          border-radius: 8px;
+          background: ${isDarkMode ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)'};
+          border: none;
+          color: ${isDarkMode ? '#111111' : '#FFFFFF'};
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          padding: 0;
+          flex-shrink: 0;
+        }
+
+        .sidebar-toggle-btn:hover {
+          background: ${isDarkMode ? 'rgba(0,0,0,0.12)' : 'rgba(255,255,255,0.16)'};
         }
 
         .user-block {
           display: flex;
           align-items: center;
+          justify-content: ${isCollapsed ? 'center' : 'flex-start'};
           gap: 12px;
-          padding: 0 12px;
-          margin-bottom: 32px;
+          padding: ${isCollapsed ? '10px 0' : '12px 14px'};
+          margin-bottom: 24px;
+          border-radius: 14px;
+          background: ${isDarkMode ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.07)'};
         }
 
         .user-avatar-circle {
-          width: 40px;
-          height: 40px;
+          width: 38px;
+          height: 38px;
           border-radius: 50%;
-          background: linear-gradient(135deg, #C084FC, #9333EA);
+          background: ${isDarkMode ? '#D1D5DB' : '#333333'};
           display: flex;
           align-items: center;
           justify-content: center;
-          color: white;
+          color: ${isDarkMode ? '#111111' : '#FFFFFF'};
           font-weight: 700;
           font-size: 14px;
           flex-shrink: 0;
         }
 
         .user-details {
-          display: flex;
+          display: ${isCollapsed ? 'none' : 'flex'};
           flex-direction: column;
           overflow: hidden;
         }
 
         .user-name-label {
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
+          color: ${isDarkMode ? '#111111' : 'rgba(255,255,255,0.90)'};
           font-size: 14px;
           font-weight: 600;
           white-space: nowrap;
@@ -269,78 +319,106 @@ const Dashboard = () => {
         }
 
         .user-email-label {
-          color: ${isDarkMode ? '#7E7693' : '#6F6882'};
+          color: ${isDarkMode ? '#6B7280' : 'rgba(255,255,255,0.45)'};
           font-size: 12px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
 
+        /* Vertical list navigation */
         .nav-links-container {
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          gap: 8px;
+          margin-bottom: 20px;
+          align-items: ${isCollapsed ? 'center' : 'stretch'};
         }
 
         .nav-link-custom {
-          height: 44px;
-          padding: 0 16px;
+          height: 48px;
+          width: ${isCollapsed ? '48px' : '100%'};
+          padding: ${isCollapsed ? '0' : '0 16px'};
           border-radius: 12px;
           font-size: 14px;
           font-weight: 500;
-          color: ${isDarkMode ? '#B9B4C7' : '#6F6882'};
+          color: ${isDarkMode ? 'rgba(17,17,17,0.65)' : 'rgba(255,255,255,0.65)'};
           cursor: pointer;
           display: flex;
+          flex-direction: row;
           align-items: center;
-          gap: 10px;
+          justify-content: ${isCollapsed ? 'center' : 'flex-start'};
+          gap: 14px;
           transition: all 0.2s ease;
           text-decoration: none;
           background: transparent;
-          border: none;
-          width: 100%;
+          border: 1px solid transparent;
+          box-sizing: border-box;
           text-align: left;
         }
 
-        .nav-link-custom.active,
-        .nav-link-custom:hover {
-          background: ${isDarkMode ? 'rgba(168, 85, 247, 0.15)' : '#F1E8FF'};
-          color: ${isDarkMode ? '#C084FC' : '#7C3AED'};
+        .nav-link-label {
+          display: ${isCollapsed ? 'none' : 'inline'};
+          white-space: nowrap;
+        }
+
+        .nav-link-custom.active {
+          background: ${isDarkMode ? '#111111' : '#FFFFFF'};
+          color: ${isDarkMode ? '#FFFFFF' : '#111111'};
+          font-weight: 600;
+          border-color: transparent;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.14);
+        }
+
+        .nav-link-custom:not(.active):hover {
+          background: ${isDarkMode ? 'rgba(0,0,0,0.06)' : 'rgba(255,255,255,0.08)'};
+          color: ${isDarkMode ? '#111111' : '#FFFFFF'};
         }
 
         .logout-btn-custom {
-          height: 44px;
-          padding: 0 16px;
+          height: 46px;
+          width: ${isCollapsed ? '48px' : '100%'};
+          padding: ${isCollapsed ? '0' : '0 16px'};
+          margin: ${isCollapsed ? '0 auto' : '0'};
           border-radius: 12px;
           font-size: 14px;
           font-weight: 500;
-          color: ${isDarkMode ? '#7E7693' : '#6F6882'};
+          color: ${isDarkMode ? 'rgba(17,17,17,0.50)' : 'rgba(255,255,255,0.45)'};
           cursor: pointer;
           display: flex;
           align-items: center;
-          gap: 10px;
+          justify-content: ${isCollapsed ? 'center' : 'flex-start'};
+          gap: 14px;
           transition: all 0.2s ease;
           background: transparent;
           border: none;
-          width: 100%;
           text-align: left;
+          box-sizing: border-box;
+        }
+
+        .logout-label {
+          display: ${isCollapsed ? 'none' : 'inline'};
+          white-space: nowrap;
         }
 
         .logout-btn-custom:hover {
           color: #DC2626;
-          background: ${isDarkMode ? 'rgba(239, 68, 68, 0.1)' : 'rgba(220, 38, 38, 0.08)'};
+          background: rgba(220, 38, 38, 0.08);
         }
 
         .main-content {
           flex: 1;
           overflow-y: auto;
-          height: 100vh;
-          padding: 40px;
+          height: calc(100vh - 32px);
+          padding: 36px 44px;
           box-sizing: border-box;
-          animation: fadeIn 0.4s ease forwards;
+          animation: fadeIn 0.35s ease forwards;
+          border-radius: 18px;
+          background: ${isDarkMode ? '#0F0F0F' : '#F5F6F8'};
         }
 
         .main-content::-webkit-scrollbar {
-          width: 8px;
+          width: 6px;
         }
 
         .main-content::-webkit-scrollbar-track {
@@ -348,27 +426,27 @@ const Dashboard = () => {
         }
 
         .main-content::-webkit-scrollbar-thumb {
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.1)'};
+          background: ${isDarkMode ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.10)'};
           border-radius: 9999px;
         }
 
         .main-content::-webkit-scrollbar-thumb:hover {
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.15)' : 'rgba(0, 0, 0, 0.2)'};
+          background: ${isDarkMode ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.18)'};
         }
 
         .top-bar-custom {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 32px;
+          margin-bottom: 28px;
           gap: 16px;
           flex-wrap: wrap;
         }
 
         .page-title-custom {
-          font-size: 28px;
+          font-size: 26px;
           font-weight: 800;
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
           letter-spacing: -0.5px;
           margin: 0;
         }
@@ -376,7 +454,7 @@ const Dashboard = () => {
         .search-filter-controls {
           display: flex;
           align-items: center;
-          gap: 16px;
+          gap: 10px;
           flex-wrap: wrap;
         }
 
@@ -389,139 +467,141 @@ const Dashboard = () => {
         .search-icon-custom {
           position: absolute;
           left: 12px;
-          color: ${isDarkMode ? '#7E7693' : '#9E98AE'};
+          color: ${isDarkMode ? '#6B7280' : '#9CA3AF'};
           pointer-events: none;
         }
 
         .search-input-custom {
-          height: 44px;
-          width: 220px;
-          border-radius: 12px;
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.06)' : '#FFFFFF'};
-          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.09)' : '#DDD8EC'};
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
-          font-size: 14px;
-          padding: 0 16px 0 40px;
+          height: 40px;
+          width: 210px;
+          border-radius: 10px;
+          background: ${isDarkMode ? '#1A1A1A' : '#FFFFFF'};
+          border: 1px solid ${isDarkMode ? '#2A2A2A' : '#E5E7EB'};
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
+          font-size: 13px;
+          padding: 0 14px 0 38px;
           outline: none;
-          transition: all 0.3s ease;
+          transition: border-color 0.2s ease, box-shadow 0.2s ease;
           font-family: inherit;
+        }
+
+        .search-input-custom::placeholder {
+          color: ${isDarkMode ? '#4B5563' : '#9CA3AF'};
         }
 
         .search-input-custom:focus {
-          border-color: #8B5CF6;
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.1)' : '#FFFFFF'};
-          box-shadow: 0 0 0 3px ${isDarkMode ? 'rgba(192, 132, 252, 0.2)' : 'rgba(139, 92, 246, 0.12)'};
+          border-color: ${isDarkMode ? '#4B5563' : '#6B7280'};
+          box-shadow: 0 0 0 3px ${isDarkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)'};
         }
 
         .select-custom {
-          height: 44px;
-          padding: 0 40px 0 16px;
-          border-radius: 12px;
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.06)' : '#FFFFFF'};
-          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.09)' : '#DDD8EC'};
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
-          font-size: 14px;
+          height: 40px;
+          padding: 0 36px 0 14px;
+          border-radius: 10px;
+          background: ${isDarkMode ? '#1A1A1A' : '#FFFFFF'};
+          border: 1px solid ${isDarkMode ? '#2A2A2A' : '#E5E7EB'};
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
+          font-size: 13px;
           outline: none;
           cursor: pointer;
           font-family: inherit;
-          transition: all 0.3s ease;
+          transition: border-color 0.2s ease;
           appearance: none;
           -webkit-appearance: none;
-          -moz-appearance: none;
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='${isDarkMode ? '%237E7693' : '%239E98AE'}' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='${isDarkMode ? '%236B7280' : '%239CA3AF'}' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
           background-repeat: no-repeat;
-          background-position: right 14px center;
+          background-position: right 12px center;
         }
 
         .select-custom:focus {
-          border-color: #8B5CF6;
+          border-color: ${isDarkMode ? '#4B5563' : '#6B7280'};
         }
 
         .select-custom option {
-          background: ${isDarkMode ? '#120A21' : '#FFFFFF'};
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
+          background: ${isDarkMode ? '#1A1A1A' : '#FFFFFF'};
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
         }
 
         .view-toggle-buttons {
           display: flex;
-          gap: 4px;
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.03)' : 'rgba(0, 0, 0, 0.04)'};
-          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.06)' : '#E9E5F3'};
+          gap: 2px;
+          background: ${isDarkMode ? '#1A1A1A' : '#FFFFFF'};
+          border: 1px solid ${isDarkMode ? '#2A2A2A' : '#E5E7EB'};
           padding: 3px;
           border-radius: 10px;
         }
 
         .view-btn {
-          width: 38px;
-          height: 38px;
+          width: 34px;
+          height: 34px;
           display: flex;
           align-items: center;
           justify-content: center;
           background: transparent;
           border: none;
-          color: ${isDarkMode ? '#7E7693' : '#9E98AE'};
+          color: ${isDarkMode ? '#6B7280' : '#9CA3AF'};
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.15s ease;
+          border-radius: 7px;
         }
 
         .view-btn.active {
-          background: ${isDarkMode ? 'rgba(168, 85, 247, 0.20)' : 'rgba(139, 92, 246, 0.15)'};
-          color: ${isDarkMode ? '#C084FC' : '#7C3AED'};
-          border-radius: 8px;
+          background: ${isDarkMode ? '#F9FAFB' : '#111111'};
+          color: ${isDarkMode ? '#111111' : '#FFFFFF'};
         }
 
         .view-btn:hover:not(.active) {
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
         }
 
         .stats-row-custom {
           display: flex;
-          gap: 16px;
-          margin-bottom: 32px;
+          gap: 14px;
+          margin-bottom: 28px;
           flex-wrap: wrap;
         }
 
         .stat-chip-custom {
           flex: 1;
-          min-width: 140px;
-          background: ${isDarkMode 
-            ? 'linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02))'
-            : '#FFFFFF'};
-          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.08)' : '#E9E5F3'};
+          min-width: 130px;
+          background: ${isDarkMode ? '#1A1A1A' : '#FFFFFF'};
+          border: 1px solid ${isDarkMode ? '#2A2A2A' : '#E5E7EB'};
           border-radius: 16px;
-          padding: 20px;
+          padding: 20px 22px;
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          gap: 8px;
-          box-shadow: ${isDarkMode ? 'none' : '0 2px 8px rgba(0,0,0,0.05)'};
-          transition: all 0.2s ease;
+          gap: 6px;
+          box-shadow: ${isDarkMode ? 'none' : '0 1px 3px rgba(0,0,0,0.05)'};
+          transition: transform 0.15s ease, box-shadow 0.15s ease;
         }
 
         .stat-chip-custom:hover {
-          box-shadow: ${isDarkMode ? '0 8px 16px rgba(0,0,0,0.2)' : '0 6px 16px rgba(0,0,0,0.08)'};
           transform: translateY(-2px);
+          box-shadow: ${isDarkMode ? '0 6px 16px rgba(0,0,0,0.25)' : '0 4px 12px rgba(0,0,0,0.08)'};
         }
 
         .stat-number-custom {
-          font-size: 24px;
-          font-weight: 700;
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
+          font-size: 30px;
+          font-weight: 800;
+          letter-spacing: -1px;
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
+          line-height: 1;
         }
 
         .stat-label-custom {
-          font-size: 13px;
+          font-size: 12px;
           font-weight: 500;
-          color: ${isDarkMode ? '#9E98AE' : '#9E98AE'};
+          color: ${isDarkMode ? '#6B7280' : '#9CA3AF'};
         }
 
         .meeting-cards-grid-custom {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 20px;
+          gap: 16px;
         }
 
-        @media (max-width: 1024px) {
+        @media (max-width: 1200px) {
           .meeting-cards-grid-custom {
             grid-template-columns: repeat(2, 1fr);
           }
@@ -535,23 +615,19 @@ const Dashboard = () => {
 
         .meeting-card-custom {
           position: relative;
-          background: ${isDarkMode 
-            ? 'linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02))'
-            : '#FFFFFF'};
-          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.08)' : '#E9E5F3'};
-          border-radius: 20px;
-          padding: 24px;
+          background: ${isDarkMode ? '#1A1A1A' : '#FFFFFF'};
+          border: 1px solid ${isDarkMode ? '#2A2A2A' : '#E5E7EB'};
+          border-radius: 18px;
+          padding: 22px 24px;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
           box-sizing: border-box;
-          box-shadow: ${isDarkMode ? 'none' : '0 4px 16px rgba(0,0,0,0.06)'};
+          box-shadow: ${isDarkMode ? 'none' : '0 1px 3px rgba(0,0,0,0.05)'};
         }
 
         .meeting-card-custom:hover {
-          transform: translateY(-4px);
-          box-shadow: ${isDarkMode 
-            ? '0 20px 48px rgba(0, 0, 0, 0.30), 0 0 20px rgba(168, 85, 247, 0.08)'
-            : '0 12px 32px rgba(0,0,0,0.10)'};
+          transform: translateY(-3px);
+          box-shadow: ${isDarkMode ? '0 12px 32px rgba(0,0,0,0.35)' : '0 8px 24px rgba(0,0,0,0.09)'};
         }
 
         .card-top-row {
@@ -560,79 +636,83 @@ const Dashboard = () => {
           align-items: center;
         }
 
+        /* Status: dot + label */
         .status-badge-custom {
-          border-radius: 20px;
-          padding: 4px 12px;
-          font-size: 12px;
-          font-weight: 600;
+          display: inline-flex;
+          align-items: center;
+          gap: 7px;
+          font-size: 12.5px;
+          font-weight: 500;
+          color: ${isDarkMode ? '#9CA3AF' : '#374151'};
+        }
+
+        .status-dot {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          flex-shrink: 0;
           display: inline-block;
         }
 
-        .status-badge-completed {
-          background: ${isDarkMode ? 'rgba(16, 185, 129, 0.15)' : '#ECFDF5'};
-          color: ${isDarkMode ? '#34D399' : '#059669'};
-          border: 1px solid ${isDarkMode ? 'rgba(52, 211, 153, 0.20)' : '#A7F3D0'};
+        .status-badge-completed .status-dot { background: #16A34A; }
+        .status-badge-failed    .status-dot { background: #DC2626; }
+        .status-badge-pending   .status-dot {
+          background: #D97706;
+          animation: pulse-dot 1.8s ease-in-out infinite;
         }
 
-        .status-badge-failed {
-          background: ${isDarkMode ? 'rgba(239, 68, 68, 0.15)' : '#FEF2F2'};
-          color: ${isDarkMode ? '#F87171' : '#DC2626'};
-          border: 1px solid ${isDarkMode ? 'rgba(248, 113, 113, 0.20)' : '#FECACA'};
-        }
-
-        .status-badge-pending {
-          background: ${isDarkMode ? 'rgba(251, 191, 36, 0.15)' : '#FFFBEB'};
-          color: ${isDarkMode ? '#FBBF24' : '#D97706'};
-          border: 1px solid ${isDarkMode ? 'rgba(252, 211, 77, 0.20)' : '#FDE68A'};
+        @keyframes pulse-dot {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0.4; }
         }
 
         .menu-dropdown-card {
           position: absolute;
-          top: 48px;
-          right: 24px;
-          background: ${isDarkMode ? '#1B162B' : '#FFFFFF'};
-          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.08)' : '#E9E5F3'};
+          top: 40px;
+          right: 0;
+          background: ${isDarkMode ? '#1E1E1E' : '#FFFFFF'};
+          border: 1px solid ${isDarkMode ? '#2A2A2A' : '#E5E7EB'};
           border-radius: 12px;
-          padding: 8px;
-          z-index: 10;
-          width: 120px;
-          box-shadow: ${isDarkMode ? '0 10px 25px rgba(0, 0, 0, 0.5)' : '0 8px 24px rgba(0,0,0,0.10)'};
+          padding: 6px;
+          z-index: 20;
+          width: 130px;
+          box-shadow: ${isDarkMode ? '0 10px 30px rgba(0,0,0,0.50)' : '0 8px 24px rgba(0,0,0,0.10)'};
           display: flex;
           flex-direction: column;
-          gap: 2px;
+          gap: 1px;
         }
 
         .menu-dropdown-item {
           padding: 8px 12px;
           font-size: 13px;
           font-weight: 500;
-          color: ${isDarkMode ? '#B9B4C7' : '#6F6882'};
-          border-radius: 6px;
+          color: ${isDarkMode ? '#9CA3AF' : '#374151'};
+          border-radius: 8px;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.15s ease;
           text-align: left;
         }
 
         .menu-dropdown-item:hover {
-          background: ${isDarkMode ? 'rgba(168, 85, 247, 0.15)' : '#F1E8FF'};
-          color: ${isDarkMode ? 'white' : '#7C3AED'};
+          background: ${isDarkMode ? '#2A2A2A' : '#F3F4F6'};
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
         }
 
         .menu-dropdown-item.delete-option {
-          color: ${isDarkMode ? '#F87171' : '#DC2626'};
+          color: #DC2626;
         }
 
         .menu-dropdown-item.delete-option:hover {
-          background: ${isDarkMode ? 'rgba(239, 68, 68, 0.15)' : 'rgba(220, 38, 38, 0.08)'};
-          color: ${isDarkMode ? '#F87171' : '#DC2626'};
+          background: rgba(220, 38, 38, 0.08);
+          color: #DC2626;
         }
 
         .meeting-card-title {
-          font-size: 17px;
+          font-size: 16px;
           font-weight: 700;
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
           margin-top: 14px;
-          margin-bottom: 8px;
+          margin-bottom: 6px;
           line-height: 1.4;
           white-space: nowrap;
           overflow: hidden;
@@ -640,53 +720,50 @@ const Dashboard = () => {
         }
 
         .view-notes-btn-custom {
-          color: ${isDarkMode ? '#C084FC' : '#8B5CF6'};
-          font-size: 13px;
+          color: ${isDarkMode ? '#9CA3AF' : '#6B7280'};
+          font-size: 12.5px;
           font-weight: 600;
           background: none;
           border: none;
           cursor: pointer;
           padding: 0;
-          margin-top: 16px;
-          display: inline-block;
+          margin-top: 14px;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
           font-family: inherit;
-          transition: opacity 0.2s ease;
+          transition: color 0.15s ease;
           text-align: left;
         }
 
         .view-notes-btn-custom:hover {
-          opacity: 0.8;
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
         }
 
         .meeting-list-row {
           display: flex;
           align-items: center;
           gap: 16px;
-          padding: 16px 20px;
-          background: ${isDarkMode 
-            ? 'linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02))'
-            : '#FFFFFF'};
-          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.08)' : '#E9E5F3'};
-          border-radius: 16px;
+          padding: 14px 20px;
+          background: ${isDarkMode ? '#1A1A1A' : '#FFFFFF'};
+          border: 1px solid ${isDarkMode ? '#2A2A2A' : '#E5E7EB'};
+          border-radius: 14px;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
           box-sizing: border-box;
-          box-shadow: ${isDarkMode ? 'none' : '0 4px 16px rgba(0,0,0,0.06)'};
         }
 
         .meeting-list-row:hover {
           transform: translateY(-2px);
-          box-shadow: ${isDarkMode 
-            ? '0 8px 24px rgba(0, 0, 0, 0.20), 0 0 15px rgba(168, 85, 247, 0.05)'
-            : '0 12px 32px rgba(0,0,0,0.10)'};
+          box-shadow: ${isDarkMode ? '0 6px 20px rgba(0,0,0,0.30)' : '0 6px 20px rgba(0,0,0,0.08)'};
         }
 
         .skeleton-card {
-          border-radius: 20px;
+          border-radius: 18px;
           padding: 24px;
-          height: 250px;
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(0, 0, 0, 0.04)'};
-          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.05)' : '#E9E5F3'};
+          height: 240px;
+          background: ${isDarkMode ? '#1A1A1A' : '#EFEFEF'};
+          border: 1px solid ${isDarkMode ? '#2A2A2A' : '#E5E7EB'};
           animation: shimmer 1.2s infinite alternate ease-in-out;
         }
 
@@ -700,112 +777,105 @@ const Dashboard = () => {
         }
 
         .empty-emoji {
-          font-size: 64px;
+          font-size: 56px;
           margin: 0;
         }
 
         .empty-title {
-          font-size: 22px;
+          font-size: 20px;
           font-weight: 700;
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
-          margin: 16px 0 0 0;
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
+          margin: 16px 0 0;
         }
 
         .empty-subtitle {
-          color: ${isDarkMode ? '#7E7693' : '#9E98AE'};
-          font-size: 15px;
-          margin: 8px 0 0 0;
+          color: ${isDarkMode ? '#6B7280' : '#9CA3AF'};
+          font-size: 14px;
+          margin: 8px 0 0;
         }
 
         .empty-btn-custom {
-          background: linear-gradient(135deg, #8B5CF6, #7C3AED);
-          border-radius: 14px;
-          padding: 12px 24px;
-          color: white;
+          background: ${isDarkMode ? '#F9FAFB' : '#111111'};
+          border-radius: 999px;
+          padding: 11px 24px;
+          color: ${isDarkMode ? '#111111' : '#FFFFFF'};
           font-weight: 600;
           font-size: 14px;
           border: none;
           cursor: pointer;
-          box-shadow: 0 4px 16px rgba(139, 92, 246, 0.25);
           margin-top: 24px;
           text-decoration: none;
-          transition: all 0.3s ease;
+          transition: opacity 0.2s ease, transform 0.2s ease;
           display: inline-block;
+          font-family: inherit;
         }
 
         .empty-btn-custom:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 24px rgba(139, 92, 246, 0.30);
+          opacity: 0.88;
+          transform: translateY(-1px);
         }
 
         .error-banner-custom {
           padding: 12px 16px;
-          background: rgba(239, 68, 68, 0.1);
-          border: 1px solid #EF4444;
-          border-radius: 12px;
-          color: #F87171;
-          font-size: 14px;
+          background: rgba(220, 38, 38, 0.06);
+          border: 1px solid rgba(220, 38, 38, 0.25);
+          border-radius: 10px;
+          color: #DC2626;
+          font-size: 13.5px;
           margin-bottom: 24px;
         }
 
         @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
+          from { opacity: 0; }
+          to   { opacity: 1; }
         }
 
         @keyframes shimmer {
-          from {
-            opacity: 0.4;
-          }
-          to {
-            opacity: 0.8;
-          }
+          from { opacity: 0.5; }
+          to   { opacity: 0.85; }
         }
 
-        /* Mobile Responsive Sidebar Drawer & Buttons */
+        /* Mobile */
         .mobile-hamburger-btn {
           display: none;
           background: transparent;
           border: none;
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
           cursor: pointer;
           padding: 8px;
           align-items: center;
           justify-content: center;
           border-radius: 8px;
-          transition: background-color 0.2s;
-          margin-right: 8px;
+          transition: background-color 0.15s;
+          margin-right: 4px;
         }
 
         .mobile-hamburger-btn:hover {
-          background: ${isDarkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'};
+          background: ${isDarkMode ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)'};
         }
 
         .new-meeting-top-btn {
-          background: linear-gradient(135deg, #8B5CF6, #7C3AED);
-          border-radius: 12px;
-          padding: 8px 16px;
-          color: white;
+          background: ${isDarkMode ? '#F9FAFB' : '#111111'};
+          border-radius: 999px;
+          padding: 9px 20px;
+          color: ${isDarkMode ? '#111111' : '#FFFFFF'};
           font-weight: 600;
           font-size: 13px;
           border: none;
           cursor: pointer;
-          box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
           text-decoration: none;
-          transition: all 0.3s ease;
+          transition: opacity 0.2s ease, transform 0.2s ease;
           display: inline-flex;
           align-items: center;
-          gap: 6px;
+          gap: 5px;
           white-space: nowrap;
+          letter-spacing: 0.1px;
+          font-family: inherit;
         }
 
         .new-meeting-top-btn:hover {
+          opacity: 0.88;
           transform: translateY(-1px);
-          box-shadow: 0 6px 16px rgba(139, 92, 246, 0.3);
         }
 
         .sidebar-overlay {
@@ -814,13 +884,18 @@ const Dashboard = () => {
           left: 0;
           width: 100vw;
           height: 100vh;
-          background: rgba(0, 0, 0, 0.4);
+          background: rgba(0, 0, 0, 0.45);
           backdrop-filter: blur(4px);
           z-index: 99;
           animation: fadeIn 0.2s ease forwards;
         }
 
         @media (max-width: 768px) {
+          .dashboard-wrapper {
+            padding: 0;
+            gap: 0;
+          }
+
           .mobile-hamburger-btn {
             display: flex;
           }
@@ -829,24 +904,28 @@ const Dashboard = () => {
             position: fixed;
             top: 0;
             left: 0;
+            height: 100vh;
+            border-radius: 0;
             transform: translateX(-100%);
             box-shadow: none;
           }
 
           .sidebar.open {
             transform: translateX(0);
-            box-shadow: 0 0 40px rgba(0, 0, 0, 0.4);
+            box-shadow: 4px 0 40px rgba(0, 0, 0, 0.35);
           }
 
           .main-content {
-            padding: 24px 16px;
+            height: 100vh;
+            border-radius: 0;
+            padding: 20px 16px;
           }
 
           .search-filter-controls {
             flex-direction: column;
             align-items: stretch;
             width: 100%;
-            gap: 12px;
+            gap: 10px;
           }
 
           .search-input-wrapper,
@@ -856,26 +935,20 @@ const Dashboard = () => {
           }
 
           .view-toggle-buttons {
-            display: flex;
             justify-content: center;
             width: 100%;
           }
 
-          .view-btn {
-            flex: 1;
-          }
+          .view-btn { flex: 1; }
 
           .stats-row-custom {
             flex-wrap: nowrap;
             overflow-x: auto;
             padding-bottom: 8px;
-            width: 100%;
             -webkit-overflow-scrolling: touch;
           }
 
-          .stats-row-custom::-webkit-scrollbar {
-            display: none;
-          }
+          .stats-row-custom::-webkit-scrollbar { display: none; }
 
           .stat-chip-custom {
             flex: 0 0 140px;
@@ -895,11 +968,32 @@ const Dashboard = () => {
       {/* Responsive Sidebar */}
       <aside className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
         <div className="sidebar-top">
-          <div style={{ marginBottom: "40px", paddingLeft: "12px" }}>
-            <VortiqLogo size={36} isDark={true} />
+          <div className="sidebar-header-row">
+            <div 
+              style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
+              onClick={isCollapsed ? toggleCollapse : undefined}
+              title={isCollapsed ? "Expand sidebar" : undefined}
+            >
+              <VortiqLogo size={32} showText={!isCollapsed} isDark={!isDarkMode} />
+            </div>
+
+            <button
+              onClick={toggleCollapse}
+              className="sidebar-toggle-btn"
+              title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                {isCollapsed ? (
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                ) : (
+                  <polyline points="15 18 9 12 15 6"></polyline>
+                )}
+              </svg>
+            </button>
           </div>
 
-          <div className="user-block">
+          <div className="user-block" title={isCollapsed ? `${user?.full_name || "User"} (${user?.email})` : undefined}>
             <div className="user-avatar-circle">
               {user?.full_name ? user.full_name.charAt(0).toUpperCase() : "U"}
             </div>
@@ -910,7 +1004,11 @@ const Dashboard = () => {
           </div>
 
           <nav className="nav-links-container">
-            <div onClick={() => handleNavClick('/dashboard')} className="nav-link-custom active">
+            <div 
+              onClick={() => handleNavClick('/dashboard')} 
+              className="nav-link-custom active"
+              title={isCollapsed ? "Dashboard" : undefined}
+            >
               <svg
                 width="18"
                 height="18"
@@ -920,16 +1018,21 @@ const Dashboard = () => {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                style={{ flexShrink: 0 }}
               >
                 <rect x="3" y="3" width="7" height="9"></rect>
                 <rect x="14" y="3" width="7" height="5"></rect>
                 <rect x="14" y="12" width="7" height="9"></rect>
                 <rect x="3" y="16" width="7" height="5"></rect>
               </svg>
-              <span>Dashboard</span>
+              <span className="nav-link-label">Dashboard</span>
             </div>
 
-            <div onClick={() => handleNavClick('/settings')} className="nav-link-custom">
+            <div 
+              onClick={() => handleNavClick('/settings')} 
+              className="nav-link-custom"
+              title={isCollapsed ? "Settings" : undefined}
+            >
               <svg
                 width="18"
                 height="18"
@@ -939,16 +1042,21 @@ const Dashboard = () => {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                style={{ flexShrink: 0 }}
               >
                 <circle cx="12" cy="12" r="3"></circle>
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
               </svg>
-              <span>Settings</span>
+              <span className="nav-link-label">Settings</span>
             </div>
           </nav>
         </div>
 
-        <button onClick={handleLogout} className="logout-btn-custom">
+        <button 
+          onClick={handleLogout} 
+          className="logout-btn-custom"
+          title={isCollapsed ? "Log Out" : undefined}
+        >
           <svg
             width="18"
             height="18"
@@ -958,12 +1066,13 @@ const Dashboard = () => {
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
+            style={{ flexShrink: 0 }}
           >
             <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
             <polyline points="16 17 21 12 16 7"></polyline>
             <line x1="21" y1="12" x2="9" y2="12"></line>
           </svg>
-          <span>Log Out</span>
+          <span className="logout-label">Log Out</span>
         </button>
       </aside>
 
@@ -1137,20 +1246,23 @@ const Dashboard = () => {
                 style={{ cursor: "pointer" }}
                 onClick={() => navigate("/meetings/" + meeting.id + "/notes")}
               >
-                {/* Top Row: status pill left, three-dot menu right */}
+                {/* Top Row: status dot+label left, three-dot menu right */}
                 <div className="card-top-row">
                   {meeting.status === "completed" && (
                     <span className="status-badge-custom status-badge-completed">
+                      <span className="status-dot" />
                       Completed
                     </span>
                   )}
                   {meeting.status === "failed" && (
                     <span className="status-badge-custom status-badge-failed">
+                      <span className="status-dot" />
                       Failed
                     </span>
                   )}
                   {meeting.status !== "completed" && meeting.status !== "failed" && (
                     <span className="status-badge-custom status-badge-pending">
+                      <span className="status-dot" />
                       {meeting.status === "processing" ? "Processing" : "Uploading"}
                     </span>
                   )}
@@ -1165,12 +1277,14 @@ const Dashboard = () => {
                       style={{
                         background: "none",
                         border: "none",
-                        color: "#7E7693",
+                        color: isDarkMode ? "#6B7280" : "#9CA3AF",
                         cursor: "pointer",
                         padding: "4px",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center"
+                        justifyContent: "center",
+                        borderRadius: "6px",
+                        transition: "color 0.15s ease"
                       }}
                       title="Menu"
                     >
@@ -1235,14 +1349,16 @@ const Dashboard = () => {
                         width: "3px",
                         height: `${height}px`,
                         borderRadius: "2px",
-                        background: isDarkMode ? "rgba(168,85,247,0.35)" : "rgba(139,92,246,0.25)"
+                        background: idx === 8 || idx === 14
+                          ? (isDarkMode ? "#F9FAFB" : "#111111")
+                          : (isDarkMode ? "#2A2A2A" : "#E5E7EB")
                       }}
                     />
                   ))}
                 </div>
 
                 {/* Date & Duration Row */}
-                <div style={{ display: "flex", justifyContent: "space-between", color: "#7E7693", fontSize: "12px", marginTop: "12px" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", color: isDarkMode ? "#6B7280" : "#9CA3AF", fontSize: "12px", marginTop: "12px" }}>
                   <span>{formatDate(meeting.created_at)}</span>
                   <span>{meeting.duration || "5:00"}</span>
                 </div>
@@ -1268,16 +1384,21 @@ const Dashboard = () => {
                 onClick={() => navigate("/meetings/" + meeting.id + "/notes")}
                 className="meeting-list-row"
               >
-                {/* Status pill on left */}
+                {/* Status dot+label on left */}
                 <div style={{ flexShrink: 0 }}>
                   {meeting.status === "completed" && (
-                    <span className="status-badge-custom status-badge-completed">Completed</span>
+                    <span className="status-badge-custom status-badge-completed">
+                      <span className="status-dot" />Completed
+                    </span>
                   )}
                   {meeting.status === "failed" && (
-                    <span className="status-badge-custom status-badge-failed">Failed</span>
+                    <span className="status-badge-custom status-badge-failed">
+                      <span className="status-dot" />Failed
+                    </span>
                   )}
                   {meeting.status !== "completed" && meeting.status !== "failed" && (
                     <span className="status-badge-custom status-badge-pending">
+                      <span className="status-dot" />
                       {meeting.status === "processing" ? "Processing" : "Uploading"}
                     </span>
                   )}
@@ -1285,7 +1406,7 @@ const Dashboard = () => {
 
                 {/* Title and Date Stacked */}
                 <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "4px" }}>
-                  <h4 style={{ margin: 0, color: isDarkMode ? "white" : "#1E1B2E", fontSize: "16px", fontWeight: "600", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  <h4 style={{ margin: 0, color: isDarkMode ? "#F9FAFB" : "#111111", fontSize: "15px", fontWeight: "600", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {meeting.title || "Untitled Meeting"}
                   </h4>
                   <span style={{ fontSize: "13px", color: "#7E7693" }}>

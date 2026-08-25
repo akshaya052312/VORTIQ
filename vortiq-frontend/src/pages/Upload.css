@@ -55,19 +55,21 @@
 .nav-link-btn {
   display: inline-flex;
   align-items: center;
-  padding: 11px 28px;
-  background: linear-gradient(135deg, rgba(155,111,212,0.25), rgba(155,111,212,0.15));
-  border: 1px solid var(--color-glass-border-hover);
+  padding: 9px 20px;
+  background: transparent;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
-  color: var(--color-text-primary);
-  font-size: 14px;
+  color: var(--color-text-secondary);
+  font-size: 13px;
   font-weight: 600;
   transition: var(--transition);
+  text-decoration: none;
 }
 
 .nav-link-btn:hover {
-  background: rgba(155,111,212,0.30);
-  opacity: 1;
+  background: var(--color-surface-secondary);
+  border-color: var(--color-glass-border-hover);
+  color: var(--color-text-primary);
 }
 
 /* Tab Selector Styling */
@@ -456,21 +458,22 @@
 }
 
 .cancel-btn {
-  padding: 11px 28px;
+  padding: 9px 20px;
   border-radius: var(--radius-pill);
-  background: linear-gradient(135deg, rgba(155,111,212,0.25), rgba(155,111,212,0.15));
-  border: 1px solid var(--color-glass-border-hover);
-  color: var(--color-text-primary);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   transition: var(--transition);
   text-align: center;
 }
 
 .cancel-btn:hover {
-  background: rgba(155,111,212,0.30);
-  opacity: 1;
+  background: var(--color-surface-secondary);
+  border-color: var(--color-glass-border-hover);
+  color: var(--color-text-primary);
 }
 
 .submit-btn {

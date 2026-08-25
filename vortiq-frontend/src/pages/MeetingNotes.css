@@ -46,12 +46,12 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 11px 28px;
-  background: linear-gradient(135deg, rgba(155,111,212,0.25), rgba(155,111,212,0.15));
-  border: 1px solid var(--color-glass-border-hover);
-  color: var(--color-text-primary);
+  padding: 9px 18px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
   border-radius: var(--radius-pill);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   transition: var(--transition);
   text-decoration: none;
@@ -62,8 +62,9 @@
   height: 0.9rem;
 }
 .mn-sidebar-back:hover {
-  background: rgba(155,111,212,0.30);
-  opacity: 1;
+  background: var(--color-surface-secondary);
+  border-color: var(--color-glass-border-hover);
+  color: var(--color-text-primary);
 }
 
 .mn-sidebar-section-label {
@@ -78,11 +79,9 @@
 
 .mn-sidebar-meeting-card {
   background: var(--color-surface);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--color-glass-border);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  box-shadow: var(--shadow-glass);
+  box-shadow: var(--shadow-card);
   padding: 0.875rem;
   display: flex;
   flex-direction: column;
@@ -128,13 +127,13 @@
   color: var(--color-text-primary);
 }
 .mn-sidebar-link-active {
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
-  border-color: var(--color-border);
+  background: var(--color-pill-bg);
+  color: var(--color-pill-text);
+  border-color: transparent;
 }
 .mn-sidebar-link-active:hover {
-  background: var(--color-accent-soft);
-  color: var(--color-accent);
+  background: var(--color-pill-bg);
+  color: var(--color-pill-text);
 }
 
 /* ── Vertical Tab Navigation ─────────────────────── */
@@ -148,8 +147,8 @@
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  padding: 11px 28px;
-  border-radius: var(--radius-pill);
+  padding: 10px 16px;
+  border-radius: var(--radius-md);
   border: 1px solid transparent;
   background: transparent;
   cursor: pointer;
@@ -164,20 +163,21 @@
 }
 
 .mn-tab-btn:hover {
-  background: rgba(155, 111, 212, 0.15);
+  background: var(--color-surface-secondary);
   color: var(--color-text-primary);
-  border-color: var(--color-glass-border-hover);
+  border-color: var(--color-border);
 }
 
 .mn-tab-btn-active {
-  background: linear-gradient(135deg, rgba(155,111,212,0.25), rgba(155,111,212,0.15));
-  color: var(--color-text-primary);
-  border-color: var(--color-glass-border-hover);
+  background: var(--color-pill-bg);
+  color: var(--color-pill-text);
+  border-color: transparent;
+  box-shadow: var(--shadow-card);
 }
 
 .mn-tab-btn-active:hover {
-  background: rgba(155,111,212,0.30);
-  color: var(--color-text-primary);
+  background: var(--color-pill-bg);
+  color: var(--color-pill-text);
 }
 
 .mn-tab-icon {
@@ -269,35 +269,42 @@
   height: 0.85rem;
 }
 
-/* Status badge for meeting notes page */
+/* Status dot+label for meeting notes page */
 .mn-status-badge {
-  padding: 4px 14px;
-  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 500;
+  color: var(--color-text-secondary);
   white-space: nowrap;
 }
 
-.mn-status-completed {
-  background: var(--color-success-soft);
-  color: var(--color-success);
-  border: 1px solid rgba(91, 185, 140, 0.25);
+.mn-status-badge::before {
+  content: '';
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
-.mn-status-processing {
-  background: rgba(155, 111, 212, 0.15);
-  color: var(--color-accent);
-  border: 1px solid rgba(155, 111, 212, 0.30);
+
+.mn-status-completed::before { background: var(--color-success); }
+.mn-status-processing::before {
+  background: #6B7280;
+  animation: mn-dot-pulse 1.8s ease-in-out infinite;
 }
-.mn-status-pending {
-  background: var(--color-warning-soft);
-  color: var(--color-warning);
-  border: 1px solid rgba(232, 168, 56, 0.25);
+.mn-status-pending::before {
+  background: var(--color-warning);
+  animation: mn-dot-pulse 1.8s ease-in-out infinite;
 }
-.mn-status-failed {
-  background: var(--color-danger-soft);
-  color: var(--color-danger);
-  border: 1px solid rgba(224, 92, 92, 0.25);
+.mn-status-failed::before { background: var(--color-danger); }
+
+@keyframes mn-dot-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
 }
+
 
 /* ── Tab Content ─────────────────────────────────── */
 .mn-content-area {
@@ -641,7 +648,7 @@
   justify-content: center;
   gap: 1.75rem;
   padding: 4rem 2rem;
-  background: radial-gradient(ellipse at 50% 30%, rgba(124, 92, 191, 0.08) 0%, transparent 70%);
+  background: transparent;
 }
 
 .mn-loading-brand {
@@ -661,7 +668,7 @@
   position: absolute;
   inset: -12px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(124, 92, 191, 0.35) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(17,17,17,0.12) 0%, transparent 70%);
   animation: mn-pulse-glow 2s ease-in-out infinite;
 }
 
@@ -669,22 +676,14 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: var(--color-accent);
-  box-shadow:
-    0 0 30px rgba(124, 92, 191, 0.5),
-    0 0 60px rgba(124, 92, 191, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-  animation: mn-rotate-orb 8s linear infinite;
+  background: var(--color-text-primary);
+  box-shadow: 0 0 16px rgba(17, 17, 17, 0.15);
+  animation: mn-pulse-glow 2s ease-in-out infinite;
 }
 
 @keyframes mn-pulse-glow {
   0%, 100% { opacity: 0.6; transform: scale(1); }
   50%       { opacity: 1;   transform: scale(1.15); }
-}
-
-@keyframes mn-rotate-orb {
-  from { filter: hue-rotate(0deg); }
-  to   { filter: hue-rotate(360deg); }
 }
 
 .mn-brand-name {
@@ -734,9 +733,9 @@
 }
 
 .active-nav-link {
-  background: var(--color-accent-soft) !important;
-  border-color: var(--color-border) !important;
-  color: var(--color-accent) !important;
+  background: var(--color-pill-bg) !important;
+  border-color: transparent !important;
+  color: var(--color-pill-text) !important;
 }
 
 /* ── Horizontal Tab Nav (used when sidebar is shared) ─ */

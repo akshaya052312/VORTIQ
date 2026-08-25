@@ -77,9 +77,7 @@ const Login = () => {
 
   return (
     <div className="split-screen-container min-h-screen overflow-y-auto" style={{
-      background: isDarkMode
-        ? 'radial-gradient(circle at top left, rgba(168,85,247,0.20), transparent 25%), radial-gradient(circle at bottom right, rgba(236,72,153,0.12), transparent 25%), #0B0715'
-        : 'linear-gradient(180deg, #FAF8FF, #F3EEFF)',
+      background: isDarkMode ? '#0F0F0F' : '#F5F6F8',
     }}>
       <style>{`
         .split-screen-container {
@@ -119,7 +117,8 @@ const Login = () => {
           width: 55%;
           position: relative;
           overflow: hidden;
-          background: ${isDarkMode ? 'linear-gradient(135deg, #120D1F, #1B0128)' : 'linear-gradient(135deg, #F3EEFF, #ECE8F5)'};
+          background: ${isDarkMode ? '#141414' : '#FFFFFF'};
+          border-right: 1px solid ${isDarkMode ? '#242424' : '#E5E7EB'};
           display: flex;
           flex-direction: column;
           justify-content: center;
@@ -129,28 +128,9 @@ const Login = () => {
           transition: background 0.3s ease;
         }
 
-        .left-glow-1 {
-          width: 350px;
-          height: 350px;
-          background: ${isDarkMode ? '#7C3AED' : '#8B5CF6'};
-          filter: blur(120px);
-          opacity: ${isDarkMode ? '0.2' : '0.15'};
-          position: absolute;
-          top: -100px;
-          left: -100px;
-          pointer-events: none;
-        }
-
+        .left-glow-1,
         .left-glow-2 {
-          width: 350px;
-          height: 350px;
-          background: ${isDarkMode ? '#9333EA' : '#A855F7'};
-          filter: blur(120px);
-          opacity: ${isDarkMode ? '0.2' : '0.15'};
-          position: absolute;
-          bottom: -100px;
-          right: -100px;
-          pointer-events: none;
+          display: none;
         }
 
         .left-content {
@@ -161,23 +141,10 @@ const Login = () => {
           max-width: 440px;
         }
 
-        .left-logo {
-          font-size: 52px;
-          font-weight: 800;
-          letter-spacing: -2px;
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
-          margin: 0;
-          line-height: 1;
-          background: ${isDarkMode ? 'linear-gradient(135deg, #C084FC, #E879F9)' : 'linear-gradient(135deg, #8B5CF6, #A855F7)'};
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-        }
-
         .left-subtitle {
-          font-size: 14px;
-          color: ${isDarkMode ? '#8E7A99' : '#6F6882'};
-          letter-spacing: 3px;
+          font-size: 13px;
+          color: ${isDarkMode ? '#9CA3AF' : '#6B7280'};
+          letter-spacing: 2px;
           text-transform: uppercase;
           margin-top: 8px;
           margin-bottom: 32px;
@@ -188,7 +155,7 @@ const Login = () => {
           display: flex;
           align-items: center;
           gap: 12px;
-          color: ${isDarkMode ? '#B9B4C7' : '#6F6882'};
+          color: ${isDarkMode ? '#D1D5DB' : '#4B5563'};
           font-size: 15px;
           margin-top: 16px;
         }
@@ -196,16 +163,15 @@ const Login = () => {
         .feature-dot {
           width: 6px;
           height: 6px;
-          background: ${isDarkMode ? '#C084FC' : '#8B5CF6'};
+          background: ${isDarkMode ? '#F9FAFB' : '#111111'};
           border-radius: 50%;
           display: inline-block;
-          box-shadow: ${isDarkMode ? '0 0 8px #C084FC' : '0 0 8px #8B5CF6'};
           flex-shrink: 0;
         }
 
         .right-panel {
           width: 45%;
-          background: ${isDarkMode ? '#0B0715' : '#F8F7FC'};
+          background: ${isDarkMode ? '#0F0F0F' : '#F5F6F8'};
           display: flex;
           align-items: center;
           justify-content: center;
@@ -217,72 +183,65 @@ const Login = () => {
         .form-card {
           width: 420px;
           max-width: 90%;
-          background: ${isDarkMode 
-            ? 'linear-gradient(145deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02))'
-            : 'linear-gradient(145deg, rgba(139, 92, 246, 0.08), rgba(139, 92, 246, 0.04))'};
-          backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
-          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(139, 92, 246, 0.15)'};
+          background: ${isDarkMode ? '#1A1A1A' : '#FFFFFF'};
+          border: 1px solid ${isDarkMode ? '#2A2A2A' : '#E5E7EB'};
           box-shadow: ${isDarkMode 
-            ? '0 8px 32px rgba(0, 0, 0, 0.45), 0 0 40px rgba(168, 85, 247, 0.12)'
-            : '0 8px 32px rgba(0, 0, 0, 0.08), 0 0 40px rgba(139, 92, 246, 0.15)'};
-          border-radius: 28px;
-          padding: 48px 40px;
+            ? '0 8px 32px rgba(0, 0, 0, 0.35)' 
+            : '0 4px 24px rgba(0, 0, 0, 0.06)'};
+          border-radius: 20px;
+          padding: 44px 36px;
           box-sizing: border-box;
           animation: fadeSlideUp 0.5s ease forwards;
         }
 
         .card-title {
-          font-size: 30px;
+          font-size: 28px;
           font-weight: 800;
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
           letter-spacing: -0.5px;
           margin: 0;
         }
 
         .card-subtitle {
           font-size: 14px;
-          color: ${isDarkMode ? '#7E7693' : '#6F6882'};
+          color: ${isDarkMode ? '#9CA3AF' : '#6B7280'};
           margin-top: 6px;
-          margin-bottom: 32px;
+          margin-bottom: 28px;
         }
 
         .form-group-custom {
           display: flex;
           flex-direction: column;
-          margin-bottom: 20px;
+          margin-bottom: 18px;
         }
 
         .form-label-custom {
-          font-size: 12px;
+          font-size: 11px;
           font-weight: 600;
           text-transform: uppercase;
-          letter-spacing: 1px;
-          color: ${isDarkMode ? '#7E7693' : '#6F6882'};
-          margin-bottom: 8px;
+          letter-spacing: 0.8px;
+          color: ${isDarkMode ? '#9CA3AF' : '#6B7280'};
+          margin-bottom: 6px;
         }
 
         .input-custom {
           width: 100%;
-          height: 56px;
-          border-radius: 16px;
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(139, 92, 246, 0.05)'};
-          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.09)' : 'rgba(139, 92, 246, 0.15)'};
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
-          font-size: 15px;
-          padding: 0 16px;
+          height: 48px;
+          border-radius: 12px;
+          background: ${isDarkMode ? '#222222' : '#F9FAFB'};
+          border: 1px solid ${isDarkMode ? '#2D2D2D' : '#E5E7EB'};
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
+          font-size: 14px;
+          padding: 0 14px;
           outline: none;
           box-sizing: border-box;
           font-family: inherit;
-          transition: all 0.3s ease;
+          transition: all 0.2s ease;
         }
 
         .input-custom:focus {
-          border-color: ${isDarkMode ? '#C084FC' : '#8B5CF6'};
-          box-shadow: ${isDarkMode 
-            ? '0 0 0 4px rgba(192, 132, 252, 0.15), 0 0 20px rgba(192, 132, 252, 0.20)'
-            : '0 0 0 4px rgba(139, 92, 246, 0.15), 0 0 20px rgba(139, 92, 246, 0.20)'};
-          transition: all 0.3s ease;
+          border-color: ${isDarkMode ? '#F9FAFB' : '#111111'};
+          box-shadow: 0 0 0 3px ${isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.06)'};
         }
 
         .input-custom.error-border {
@@ -304,48 +263,42 @@ const Login = () => {
 
         .password-toggle-custom {
           position: absolute;
-          right: 16px;
+          right: 14px;
           background: none;
           border: none;
           cursor: pointer;
-          color: ${isDarkMode ? '#7E7693' : '#6F6882'};
+          color: ${isDarkMode ? '#9CA3AF' : '#6B7280'};
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 0;
-          transition: color 0.3s ease;
+          transition: color 0.2s ease;
         }
 
         .password-toggle-custom:hover {
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
         }
 
         .submit-btn-custom {
           width: 100%;
-          height: 56px;
-          border-radius: 16px;
-          background: ${isDarkMode 
-            ? 'linear-gradient(135deg, #F0B56B, #D97706)'
-            : 'linear-gradient(135deg, #8B5CF6, #7C3AED)'};
-          color: white;
-          font-weight: 700;
-          font-size: 16px;
+          height: 48px;
+          border-radius: 12px;
+          background: ${isDarkMode ? '#F9FAFB' : '#111111'};
+          color: ${isDarkMode ? '#111111' : '#FFFFFF'};
+          font-weight: 600;
+          font-size: 15px;
           border: none;
           cursor: pointer;
-          box-shadow: ${isDarkMode 
-            ? '0 8px 24px rgba(240, 181, 107, 0.30)'
-            : '0 8px 24px rgba(139, 92, 246, 0.30)'};
-          transition: all 0.3s ease;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+          transition: all 0.2s ease;
           display: flex;
           align-items: center;
           justify-content: center;
         }
 
         .submit-btn-custom:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: ${isDarkMode 
-            ? '0 12px 32px rgba(240, 181, 107, 0.40)'
-            : '0 12px 32px rgba(139, 92, 246, 0.40)'};
+          opacity: 0.92;
+          transform: translateY(-1px);
         }
 
         .submit-btn-custom:disabled {
@@ -356,76 +309,76 @@ const Login = () => {
         .divider-custom {
           display: flex;
           align-items: center;
-          margin: 24px 0;
+          margin: 20px 0;
         }
 
         .divider-line {
           flex: 1;
           height: 1px;
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.08)' : 'rgba(139, 92, 246, 0.1)'};
+          background: ${isDarkMode ? '#2A2A2A' : '#E5E7EB'};
         }
 
         .divider-text {
-          padding: 0 16px;
-          font-size: 13px;
-          color: ${isDarkMode ? '#7E7693' : '#6F6882'};
+          padding: 0 14px;
+          font-size: 12px;
+          color: ${isDarkMode ? '#9CA3AF' : '#6B7280'};
         }
 
         .google-btn-custom {
           width: 100%;
-          height: 56px;
-          border-radius: 16px;
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.06)' : 'rgba(139, 92, 246, 0.05)'};
-          border: 1px solid ${isDarkMode ? 'rgba(255, 255, 255, 0.09)' : 'rgba(139, 92, 246, 0.15)'};
-          color: ${isDarkMode ? 'white' : '#1E1B2E'};
+          height: 48px;
+          border-radius: 12px;
+          background: ${isDarkMode ? '#222222' : '#FFFFFF'};
+          border: 1px solid ${isDarkMode ? '#2D2D2D' : '#E5E7EB'};
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
           font-weight: 600;
-          font-size: 15px;
+          font-size: 14px;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 12px;
+          gap: 10px;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.2s ease;
         }
 
         .google-btn-custom:hover {
-          background: ${isDarkMode ? 'rgba(255, 255, 255, 0.10)' : 'rgba(139, 92, 246, 0.10)'};
+          background: ${isDarkMode ? '#282828' : '#F9FAFB'};
         }
 
         .footer-custom {
           text-align: center;
-          margin-top: 32px;
-          font-size: 14px;
-          color: ${isDarkMode ? '#7E7693' : '#6F6882'};
+          margin-top: 28px;
+          font-size: 13px;
+          color: ${isDarkMode ? '#9CA3AF' : '#6B7280'};
         }
 
         .footer-link-custom {
-          color: ${isDarkMode ? '#C084FC' : '#8B5CF6'};
-          text-decoration: none;
+          color: ${isDarkMode ? '#F9FAFB' : '#111111'};
+          text-decoration: underline;
           font-weight: 600;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.2s ease;
         }
 
         .footer-link-custom:hover {
-          text-decoration: underline;
+          opacity: 0.8;
         }
 
         .api-error-banner-custom {
-          padding: 12px 16px;
+          padding: 10px 14px;
           background: rgba(239, 68, 68, 0.1);
           border: 1px solid #EF4444;
-          border-radius: 12px;
+          border-radius: 10px;
           color: #F87171;
-          font-size: 14px;
-          margin-bottom: 24px;
+          font-size: 13px;
+          margin-bottom: 20px;
           line-height: 1.4;
         }
 
         @keyframes fadeSlideUp {
           from {
             opacity: 0;
-            transform: translateY(24px);
+            transform: translateY(16px);
           }
           to {
             opacity: 1;
@@ -442,7 +395,7 @@ const Login = () => {
             padding: 24px;
           }
           .form-card {
-            padding: 40px 24px;
+            padding: 36px 20px;
           }
         }
       `}</style>
@@ -453,7 +406,7 @@ const Login = () => {
         <div className="left-glow-2" />
         <div className="left-content">
           <div style={{ marginBottom: "16px" }}>
-            <VortiqLogo size={48} isDark={true} />
+            <VortiqLogo size={48} isDark={isDarkMode} />
           </div>
           <div className="left-subtitle">AI-Powered Meeting Intelligence</div>
           <div>
