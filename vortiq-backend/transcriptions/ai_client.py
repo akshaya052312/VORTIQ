@@ -1,5 +1,5 @@
 """
-Groq AI client for Vortiq.
+OpenRouter AI client for Vortiq.
 
 Exposes:
     ask_ai(prompt: str) -> str        — primary function used by ai_tasks.py
@@ -10,7 +10,7 @@ Nothing else in the codebase needs to change: all existing callers that
 import `ask_gemini` or `GeminiAPIError` from this module continue to work.
 """
 
-from groq import Groq
+from openai import OpenAI
 from django.conf import settings
 
 
@@ -28,7 +28,7 @@ GeminiAPIError = AIError
 
 def ask_ai(prompt: str) -> str:
     """
-    Send *prompt* to the Groq LLaMA-3 model and return the response text.
+    Send *prompt* to the configured OpenRouter model and return the response text.
 
     Args:
         prompt: The plain-text prompt to send to the model.
@@ -40,23 +40,26 @@ def ask_ai(prompt: str) -> str:
         AIError / GeminiAPIError: If the API key is missing, the request
                                   fails, or the response contains no text.
     """
-    api_key = settings.GROQ_API_KEY
+    api_key = settings.OPENROUTER_API_KEY
     if not api_key:
         raise AIError(
-            "GROQ_API_KEY is not set. Add it to your .env file."
+            "OPENROUTER_API_KEY is not set. Add it to your .env file."
         )
 
     try:
-        client = Groq(api_key=api_key)
+        client = OpenAI(
+            api_key=api_key,
+            base_url="https://openrouter.ai/api/v1",
+        )
         response = client.chat.completions.create(
-            model="llama-3.3-70b-versatile",
+            model="stealth/ox-alpha",
             messages=[
                 {"role": "user", "content": prompt},
             ],
         )
         return response.choices[0].message.content.strip()
     except Exception as exc:
-        raise AIError(f"Groq API request failed: {exc}") from exc
+        raise AIError(f"OpenRouter API request failed: {exc}") from exc
 
 
 # Backwards-compatible alias — callers importing ask_gemini still work.

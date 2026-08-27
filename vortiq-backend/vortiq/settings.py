@@ -230,10 +230,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 # ──────────────────────────────────────────────
-# Groq AI
+# OPENROUTER AI
 # ──────────────────────────────────────────────
-
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY", "")
 
 # ──────────────────────────────────────────────
 # Django Channels — Redis Channel Layer
